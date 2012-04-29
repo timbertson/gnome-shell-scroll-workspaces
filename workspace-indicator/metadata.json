@@ -1,9 +1,8 @@
 {
-    "uuid": "workspace-indicator@erick.red.gmail.com",
+    "uuid": "workspace-indicator@gfxmonk.net",
     "name": "Workspace Indicator",
     "description": "Put an indicator on the panel signaling in which workspace you are, and give you the possibility of switching to another one",
     "shell-version": [ "3.4" ],
-    "localedir": "/home/tim/dev/gnome-shell/erick2red-shell-extensions/BUILD/share/locale",
     "original-authors": [ "erick.red@gmail.com" ],
     "url": "https://github.com/erick2red/shell-extensions"
 }
