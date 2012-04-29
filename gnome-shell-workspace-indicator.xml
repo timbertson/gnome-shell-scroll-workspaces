@@ -26,5 +26,9 @@ scroll events, allowing changing of workspaces easily.
 			<manifest-digest sha256="81e11aaa4214acd086a301f010cdf76f59fe3c650bf893fe8e7894e56af87596"/>
 			<archive href="http://gfxmonk.net/dist/0install/gnome-shell-workspace-indicator/gnome-shell-workspace-indicator-20120429.2129.tgz" size="3115"/>
 		</implementation>
+		<implementation id="sha1new=50b61f71e1d756202daf929368b9dfeb99d3a83a" released="2012-04-29" version="20120429.2214">
+			<manifest-digest sha256="fa88a066eb0c196b3b7612288b66123ae14ab9508969baa5b961d2df85bf1236"/>
+			<archive href="http://gfxmonk.net/dist/0install/gnome-shell-workspace-indicator/gnome-shell-workspace-indicator-20120429.2214.tgz" size="3064"/>
+		</implementation>
 	</group>
 </interface>
