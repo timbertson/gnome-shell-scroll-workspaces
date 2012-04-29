@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+	<schema id="org.gnome.shell.extensions.workspace-indicator" path="/org/gnome/shell/extensions/workspace-indicator/">
+		<key type="b" name="entire-panel-reactive">
+			<default>false</default>
+			<summary>React to scroll events anywhere on the panel</summary>
+			<description>Can conflict with other extensions</description>
+		</key>
+		<key type="b" name="wide-indicator">
+			<default>false</default>
+			<summary>Wide indicator</summary>
+			<description>If true, "Workspace x" is displayed. If false, only the workspace number is shown.</description>
+		</key>
+	</schema>
+</schemalist>

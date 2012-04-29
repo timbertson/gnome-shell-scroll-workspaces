@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type='text/xsl' href='interface.xsl'?>
+<interface xmlns="http://zero-install.sourceforge.net/2004/injector/interface" uri="http://gfxmonk.net/dist/0install/gnome-shell-workspace-indicator.xml">
+	<name>gnome-shell-workspace-indicator</name>
+	<summary>workspace indicator for gnome-shell</summary>
+	<publish xmlns="http://gfxmonk.net/dist/0install" mode="third-party"/>
+	<description>
+### Gnome-Shell Extensions
+
+#### For now
+* workspace-indicator extension
+* wish-list extension
+
+#### Requirements
+* Gnome-Shell 3.0.1 or later
+
+#### Hwo to install
+* Open a console and type the following:
+	* git clone git://github.com/erick2red/shell-extensions.git
+	* cd shell-extensions
+	* ./autogen.sh
+	* make
+	* sudo make install
+* Then restart the Shell
+
+#### Requests, bugs, comments
+* github
+* [erick.red (at) gmail.com](mailto:erick.red@gmail.com)
+	</description>
+	<homepage>https://github.com/erick2red/shell-extensions</homepage>
+	<rich-description xmlns="http://gfxmonk.net/dist/0install">
+		<div xmlns="http://www.w3.org/1999/xhtml">
+			<h3 id="gnome-shell-extensions">Gnome-Shell Extensions</h3>
+			<h4 id="for-now">For now</h4>
+			<ul>
+				<li>workspace-indicator extension</li>
+				<li>wish-list extension</li>
+			</ul>
+			<h4 id="requirements">Requirements</h4>
+			<ul>
+				<li>Gnome-Shell 3.0.1 or later</li>
+			</ul>
+			<h4 id="hwo-to-install">Hwo to install</h4>
+			<ul>
+				<li>Open a console and type the following:
+<ul><li>git clone git://github.com/erick2red/shell-extensions.git</li><li>cd shell-extensions</li><li>./autogen.sh</li><li>make</li><li>sudo make install</li></ul></li>
+				<li>Then restart the Shell</li>
+			</ul>
+			<h4 id="requests-bugs-comments">Requests, bugs, comments</h4>
+			<ul>
+				<li>github</li>
+				<li>
+					<script type="text/javascript">
+						<!--
+h='&#x67;&#x6d;&#x61;&#x69;&#108;&#46;&#x63;&#x6f;&#x6d;';a='&#64;';n='&#x65;&#114;&#x69;&#x63;&#x6b;&#46;&#114;&#x65;&#100;';e=n+a+h;
+document.write('<a h'+'ref'+'="ma'+'ilto'+':'+e+'">'+'erick.red (at) gmail.com'+'<\/'+'a'+'>');
+// -->
+					</script>
+					<noscript>erick.red (at) gmail.com (erick.red at gmail dot com)</noscript>
+				</li>
+			</ul>
+		</div>
+	</rich-description>
+	<group>
+		<environment insert="xdg/data" mode="prepend" name="XDG_DATA_DIRS"/>
+		<implementation id="sha1new=389978e24680798d1231e8d66277dfcc09180bfc" released="2011-08-06" version="20110806.1108">
+			<manifest-digest sha256="f61959400d619576aeb62795d37ece8daf265aafc1ce38f0cf835cf688908276"/>
+			<archive href="http://gfxmonk.net/dist/0install/gnome-shell-workspace-indicator/gnome-shell-workspace-indicator-20110806.1108.tgz" size="18819"/>
+		</implementation>
+		<implementation id="sha1new=7d98a541dc6c611ff21fd19e79f7e3d7b8000c54" released="2011-11-01" version="20111101.2114">
+			<manifest-digest sha256="8195d8405d37fc430e2f8f71c5ea08530554a7bd897493f18a2e1582d205ba19"/>
+			<archive href="http://gfxmonk.net/dist/0install/gnome-shell-workspace-indicator/gnome-shell-workspace-indicator-20111101.2114.tgz" size="19080"/>
+		</implementation>
+	</group>
+</interface>
