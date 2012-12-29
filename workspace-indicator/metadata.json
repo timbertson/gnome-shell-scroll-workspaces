@@ -2,7 +2,7 @@
     "uuid": "workspace-indicator@gfxmonk.net",
     "name": "Workspace Indicator",
     "description": "Put an indicator on the panel signaling in which workspace you are, and give you the possibility of switching to another one",
-    "shell-version": [ "3.4" ],
+    "shell-version": [ "3.4", "3.6" ],
     "original-authors": [ "erick.red@gmail.com" ],
     "url": "https://github.com/erick2red/shell-extensions"
 }
