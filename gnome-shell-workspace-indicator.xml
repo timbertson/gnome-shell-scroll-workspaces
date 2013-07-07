@@ -1,15 +1,11 @@
-<?xml version="1.0"?>
+<?xml version="1.0" ?>
 <?xml-stylesheet type='text/xsl' href='interface.xsl'?>
-<interface xmlns="http://zero-install.sourceforge.net/2004/injector/interface" uri="http://gfxmonk.net/dist/0install/gnome-shell-workspace-indicator.xml">
+<interface uri="http://gfxmonk.net/dist/0install/gnome-shell-workspace-indicator.xml" xmlns="http://zero-install.sourceforge.net/2004/injector/interface">
 	<name>gnome-shell-workspace-indicator</name>
 	<summary>workspace indicator for gnome-shell</summary>
-	<publish xmlns="http://gfxmonk.net/dist/0install" mode="third-party"/>
+	<publish mode="third-party" xmlns="http://gfxmonk.net/dist/0install"/>
 	<description>
-Forked from http://git.gnome.org/browse/gnome-shell-extensions,
-which was originally forked from https://github.com/erick2red/shell-extensions
-
-The primary addition of this fork is to make the entire top panel reactive to
-scroll events, allowing changing of workspaces easily.
+Change workspaces by scrolling while over the top panel in gnome shell.
 	</description>
 	<replaced-by interface="http://gfxmonk.net/dist/0install/gnome-shell-workspace-indicator.xml"/>
 	<homepage>https://github.com/erick2red/shell-extensions</homepage>
