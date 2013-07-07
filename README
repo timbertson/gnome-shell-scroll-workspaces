@@ -1,5 +1,1 @@
-Forked from http://git.gnome.org/browse/gnome-shell-extensions,
-which was originally forked from https://github.com/erick2red/shell-extensions
-
-The primary addition of this fork is to make the entire top panel reactive to
-scroll events, allowing changing of workspaces easily.
+Change workspaces by scrolling while over the top panel in gnome shell.
