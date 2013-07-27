@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type='text/xsl' href='interface.xsl'?>
+<interface xmlns="http://zero-install.sourceforge.net/2004/injector/interface" xmlns:compile="http://zero-install.sourceforge.net/2006/namespaces/0compile" xmlns:release="http://zero-install.sourceforge.net/2007/namespaces/0release">
+	<name>gnome-shell-scroll-workspaces</name>
+	<summary>gnome-shell-scroll-workspaces</summary>
+	<description>
+Change workspaces by scrolling while over the top panel in gnome shell.
+	</description>
+	<homepage>https://github.com/gfxmonk/gnome-shell-scroll-workspaces</homepage>
+	<feed-for interface="http://gfxmonk.net/dist/0install/gnome-shell-scroll-workspaces.xml"/>
+	<group>
+		<environment insert="xdg/data" mode="prepend" name="XDG_DATA_DIRS"/>
+		<command name="run">
+			<runner interface="http://gfxmonk.net/dist/0install/zeroinstall-plugin-manager.xml">
+				<arg>http://gfxmonk.net/dist/0install/gnome-shell.xml</arg>
+				<arg>--plugin-command</arg>
+				<arg>run</arg>
+			</runner>
+		</command>
+		<implementation released="{date}" version="{version}">
+			<manifest-digest/>
+			<archive href="{archive}"/>
+		</implementation>
+	</group>
+</interface>
