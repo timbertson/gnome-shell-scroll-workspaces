@@ -36,8 +36,9 @@ Ext.prototype = {
 	_onScrollEvent : function(actor, event) {
 		let source = event.get_source();
 		if (source != actor) {
-			// Actors in the "status" area, so only respond to scroll events
-			// on the panel itself or from the panel's center box.
+			// Actors in the "status" area often have their own scroll events,
+			// so only respond to scroll events on the panel itself
+			// or from the panel's center box.
 			let fromCenter = this._panel._centerBox && this._panel._centerBox.contains && this._panel._centerBox.contains(source);
 			if (!fromCenter) {
 				return false;
