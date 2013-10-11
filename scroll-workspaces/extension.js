@@ -52,11 +52,12 @@ Ext.prototype = {
 		} else if (direction == Clutter.ScrollDirection.UP) {
 			diff = -1;
 		} else {
-			return;
+			return false;
 		}
 
 		let newIndex = global.screen.get_active_workspace().index() + diff;
 		this._activate(newIndex);
+		return true;
 	},
 }
 
