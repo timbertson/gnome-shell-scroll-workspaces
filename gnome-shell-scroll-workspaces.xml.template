@@ -17,7 +17,7 @@ Change workspaces by scrolling while over the top panel in gnome shell.
 				<arg>run</arg>
 			</runner>
 		</command>
-		<implementation released="{date}" version="{version}">
+		<implementation version="{version}">
 			<manifest-digest/>
 			<archive href="{archive}"/>
 		</implementation>
