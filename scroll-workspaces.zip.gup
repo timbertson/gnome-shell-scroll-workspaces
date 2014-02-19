@@ -1,0 +1,4 @@
+#!bash -eu
+cd scroll-workspaces
+gup -u *
+zip -r "$1" *
