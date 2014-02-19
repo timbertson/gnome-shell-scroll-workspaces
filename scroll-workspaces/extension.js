@@ -2,6 +2,8 @@ const Clutter = imports.gi.Clutter;
 const Lang = imports.lang;
 const Main = imports.ui.main;
 
+var WAIT_MS = 200;
+
 function Ext() {
 	this._init.apply(this, arguments);
 }
@@ -10,6 +12,7 @@ Ext.prototype = {
 	_init: function(){
 		this._panel = Main.panel;
 		this._panelBinding = null;
+		this._lastScroll = new Date().getTime();
 	},
 
 	disable: function() {
@@ -54,6 +57,16 @@ Ext.prototype = {
 		} else {
 			return false;
 		}
+
+		var currentTime = new Date().getTime();
+		// global.log("scroll time diff = " + (currentTime - this._lastScroll));
+		if (currentTime > this._lastScroll && currentTime < this._lastScroll + WAIT_MS) {
+			// within wait period - consume this event (but do nothing)
+			// to prevent accidental rapid scrolling
+			return true;
+		}
+		this._lastScroll = currentTime;
+
 
 		let newIndex = global.screen.get_active_workspace().index() + diff;
 		this._activate(newIndex);
