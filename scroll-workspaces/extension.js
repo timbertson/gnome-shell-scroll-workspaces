@@ -69,8 +69,12 @@ Ext.prototype = {
 
 
 		let newIndex = global.screen.get_active_workspace().index() + diff;
-		this._activate(newIndex);
-		return true;
+		if (newIndex < global.screen.n_workspaces - 1) {
+			this._activate(newIndex);
+			return true;
+		} else {
+			return false;
+		}
 	},
 }
 
