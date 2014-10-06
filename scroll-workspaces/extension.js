@@ -3,6 +3,7 @@ const Lang = imports.lang;
 const Main = imports.ui.main;
 
 var WAIT_MS = 200;
+var IGNORE_LAST_WORKSPACE = true;
 
 function Ext() {
 	this._init.apply(this, arguments);
@@ -69,7 +70,7 @@ Ext.prototype = {
 
 
 		let newIndex = global.screen.get_active_workspace().index() + diff;
-		if (newIndex < global.screen.n_workspaces - 1) {
+		if (newIndex < global.screen.n_workspaces - 1 || !IGNORE_LAST_WORKSPACE ) {
 			this._activate(newIndex);
 			return true;
 		} else {
