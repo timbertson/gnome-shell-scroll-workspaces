@@ -1,9 +1,12 @@
 const Clutter = imports.gi.Clutter;
 const Lang = imports.lang;
 const Main = imports.ui.main;
+const ExtensionUtils = imports.misc.extensionUtils;
+const Extension = ExtensionUtils.getCurrentExtension();
+const Settings = Extension.imports.settings;
 
 var WAIT_MS = 200;
-var IGNORE_LAST_WORKSPACE = true;
+var IGNORE_LAST_WORKSPACE = false;
 
 function Ext() {
 	this._init.apply(this, arguments);
@@ -25,10 +28,14 @@ Ext.prototype = {
 
 	enable: function() {
 		this._panel.reactive = true;
+		var pref = (new Settings.Prefs()).IGNORE_LAST_WORKSPACE;
 		if (this._panelBinding) {
 			// enabled twice in a row? should be impossible
 			this.disable();
 		}
+		var binding = pref.changed(Lang.bind(this, function() {
+			IGNORE_LAST_WORKSPACE = pref.get();
+		}));
 		this._panelBinding = this._panel.actor.connect('scroll-event', Lang.bind(this, this._onScrollEvent));
 	},
 
