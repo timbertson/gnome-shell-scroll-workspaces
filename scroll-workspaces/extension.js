@@ -6,7 +6,6 @@ const Extension = ExtensionUtils.getCurrentExtension();
 const Settings = Extension.imports.settings;
 
 var WAIT_MS = 200;
-// var IGNORE_LAST_WORKSPACE = false;
 
 function Ext() {
 	this._init.apply(this, arguments);
@@ -17,25 +16,32 @@ Ext.prototype = {
 		this._panel = Main.panel;
 		this._panelBinding = null;
 		this._lastScroll = new Date().getTime();
+		this._ignoreLastWorkspace = false;
 	},
 
 	disable: function() {
 		if (this._panelBinding) {
 			this._panel.actor.disconnect(this._panelBinding);
 			this._panelBinding = null;
+			this.unbind();
 		}
 	},
 
 	enable: function() {
 		this._panel.reactive = true;
-		this._pref = (new Settings.Prefs()).IGNORE_LAST_WORKSPACE;
+		pref = (new Settings.Prefs()).IGNORE_LAST_WORKSPACE;
 		if (this._panelBinding) {
 			// enabled twice in a row? should be impossible
 			this.disable();
 		}
-//		var binding = this._pref.changed(Lang.bind(this, function() {
-//			IGNORE_LAST_WORKSPACE = this._pref.get();
-//		}));
+		this._ignoreLastWorkspace = pref.get();
+		var binding = pref.changed(Lang.bind(this, function() {
+			this._ignoreLastWorkspace = pref.get();
+		}));
+		this.unbind = function() {
+			pref.disconnect(binding);
+			this.unbind = noop;
+		}
 		this._panelBinding = this._panel.actor.connect('scroll-event', Lang.bind(this, this._onScrollEvent));
 	},
 
@@ -77,7 +83,7 @@ Ext.prototype = {
 
 
 		let newIndex = global.screen.get_active_workspace().index() + diff;
-		if (newIndex < global.screen.n_workspaces - 1 || !this._pref.get() ) {
+		if (newIndex < global.screen.n_workspaces - 1 || !this._ignoreLastWorkspace ) {
 			this._activate(newIndex);
 			return true;
 		} else {
