@@ -1,2 +1,3 @@
 *-local.xml
 *.zip
+/schemas/*.compiled
