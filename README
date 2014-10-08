@@ -1,3 +1,3 @@
-A fork of gfxmonk's gnome-shell-scroll-workspaces, which contains a boolean in extension.js
-for refusing to scroll to the last workspace---useful for dynamic workspaces when you don't
-want to accidentally scroll to the empty one.
+Change workspaces by scrolling while hovering over the top panel in GNOME shell.
+
+There is one setting, whether or not to ignore the last workspace; this can be useful for those using dynamic workspaces.
