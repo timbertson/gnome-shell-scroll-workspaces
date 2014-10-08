@@ -40,7 +40,7 @@ Ext.prototype = {
 		}));
 		this.unbind = function() {
 			pref.disconnect(binding);
-			this.unbind = noop;
+			this.unbind = function() {};
 		}
 		this._panelBinding = this._panel.actor.connect('scroll-event', Lang.bind(this, this._onScrollEvent));
 	},
