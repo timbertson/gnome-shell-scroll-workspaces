@@ -13,7 +13,7 @@ function Ext() {
 }
 
 Ext.prototype = {
-	_init: function(){
+	_init: function() {
 		this._panel = Main.panel;
 		this._panelBinding = null;
 		this._lastScroll = new Date().getTime();

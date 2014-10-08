@@ -20,7 +20,7 @@ function buildPrefsWidget() {
 		});
 
 		let label = new Gtk.Label({
-			label: "Skip last workspace:",
+			label: "Do not scroll into last workspace:",
 			use_markup: false,
 		});
 		let checkbutton = new Gtk.CheckButton();
@@ -33,7 +33,7 @@ function buildPrefsWidget() {
 		checkbutton.set_active(pref.get());
 		checkbutton.connect('toggled', function(sw) {
 			var oldval = pref.get();
-			var newval = sw.get_value();
+			var newval = sw.get_active();
 			if (newval != pref.get()) {
 				pref.set(newval);
 			}
