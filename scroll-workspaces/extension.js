@@ -1,6 +1,9 @@
 const Clutter = imports.gi.Clutter;
 const Lang = imports.lang;
 const Main = imports.ui.main;
+const ExtensionUtils = imports.misc.extensionUtils;
+const Extension = ExtensionUtils.getCurrentExtension();
+const Settings = Extension.imports.settings;
 
 var WAIT_MS = 200;
 
@@ -9,24 +12,35 @@ function Ext() {
 }
 
 Ext.prototype = {
-	_init: function(){
+	_init: function() {
 		this._panel = Main.panel;
 		this._panelBinding = null;
 		this._lastScroll = new Date().getTime();
+		this._ignoreLastWorkspace = false;
 	},
 
 	disable: function() {
 		if (this._panelBinding) {
 			this._panel.actor.disconnect(this._panelBinding);
 			this._panelBinding = null;
+			this.unbind();
 		}
 	},
 
 	enable: function() {
 		this._panel.reactive = true;
+		pref = (new Settings.Prefs()).IGNORE_LAST_WORKSPACE;
 		if (this._panelBinding) {
 			// enabled twice in a row? should be impossible
 			this.disable();
+		}
+		this._ignoreLastWorkspace = pref.get();
+		var binding = pref.changed(Lang.bind(this, function() {
+			this._ignoreLastWorkspace = pref.get();
+		}));
+		this.unbind = function() {
+			pref.disconnect(binding);
+			this.unbind = function() {};
 		}
 		this._panelBinding = this._panel.actor.connect('scroll-event', Lang.bind(this, this._onScrollEvent));
 	},
@@ -69,8 +83,12 @@ Ext.prototype = {
 
 
 		let newIndex = global.screen.get_active_workspace().index() + diff;
-		this._activate(newIndex);
-		return true;
+		if (newIndex < global.screen.n_workspaces - 1 || !this._ignoreLastWorkspace || Main.overview.visible ) {
+			this._activate(newIndex);
+			return true;
+		} else {
+			return false;
+		}
 	},
 }
 

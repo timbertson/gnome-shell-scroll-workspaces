@@ -1,4 +1,4 @@
-ZIP_FILE=0inst/scroll-workspaces.zip
+ZIP_FILE=scroll-workspaces.zip
 zip: phony
 	rm -f ${ZIP_FILE}
 	(cd scroll-workspaces && \
