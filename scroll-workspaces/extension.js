@@ -23,6 +23,10 @@ const WorkspaceScroller = new Lang.Class({
 			Main.panel.actor.disconnect(this._panelScrollEventId);
 			this._panelScrollEventId = 0;
 		}
+		if (this._settingsChangedId) {
+			this._settings.disconnect(this._settingsChangedId);
+			this._settingsChangedId = 0;
+		}
 	},
 
 	_updateDelay: function() {
