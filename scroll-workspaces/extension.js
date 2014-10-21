@@ -1,51 +1,46 @@
+const Gio = imports.gi.Gio;
 const Clutter = imports.gi.Clutter;
 const Lang = imports.lang;
+
 const Main = imports.ui.main;
 
-var WAIT_MS = 200;
+const PREFS_SCHEMA = 'org.gnome.shell.extensions.scroll-workspaces';
 
-function Ext() {
-	this._init.apply(this, arguments);
-}
+const WorkspaceScroller = new Lang.Class({
+	Name: 'WorkspaceScroller',
 
-Ext.prototype = {
-	_init: function(){
-		this._panel = Main.panel;
-		this._panelBinding = null;
-		this._lastScroll = new Date().getTime();
+	_init: function() {
+		Main.panel.actor.reactive = true;
+		this._panelScrollEventId = Main.panel.actor.connect('scroll-event', Lang.bind(this, this._onScrollEvent));
+		this._lastScrollTime = new Date().getTime();
+		this._settings = new Gio.Settings({ schema_id: PREFS_SCHEMA });
+		this._settingsChangedId = this._settings.connect('changed::scroll-delay', Lang.bind(this, this._updateDelay));
+		this._updateDelay();
 	},
 
-	disable: function() {
-		if (this._panelBinding) {
-			this._panel.actor.disconnect(this._panelBinding);
-			this._panelBinding = null;
+	destroy: function() {
+		if (this._panelScrollEventId) {
+			Main.panel.actor.disconnect(this._panelScrollEventId);
+			this._panelScrollEventId = 0;
 		}
 	},
 
-	enable: function() {
-		this._panel.reactive = true;
-		if (this._panelBinding) {
-			// enabled twice in a row? should be impossible
-			this.disable();
-		}
-		this._panelBinding = this._panel.actor.connect('scroll-event', Lang.bind(this, this._onScrollEvent));
+	_updateDelay: function() {
+		this._delay = this._settings.get_int('scroll-delay');
 	},
 
-	_activate : function (index) {
-		let metaWorkspace = global.screen.get_workspace_by_index(index);
-		if (metaWorkspace) metaWorkspace.activate(true);
+	_activate : function(index) {
+		if (index >= 0 && index < global.screen.n_workspaces) {
+			let metaWorkspace = global.screen.get_workspace_by_index(index);
+			metaWorkspace.activate(global.get_current_time());
+		}
 	},
 
 	_onScrollEvent : function(actor, event) {
 		let source = event.get_source();
-		if (source != actor) {
-			// Actors in the "status" area often have their own scroll events,
-			// so only respond to scroll events on the panel itself
-			// or from the panel's center box.
-			let fromCenter = this._panel._centerBox && this._panel._centerBox.contains && this._panel._centerBox.contains(source);
-			if (!fromCenter) {
-				return false;
-			}
+		if (source.has_style_class_name('panel-status-indicators-box') || source.has_style_class_name('panel-status-button')) {
+			// Actors in the "status" area may have their own scroll events
+			return;
 		}
 
 		let direction = event.get_scroll_direction();
@@ -55,30 +50,31 @@ Ext.prototype = {
 		} else if (direction == Clutter.ScrollDirection.UP) {
 			diff = -1;
 		} else {
-			return false;
+			return;
 		}
 
-		var currentTime = new Date().getTime();
-		// global.log("scroll time diff = " + (currentTime - this._lastScroll));
-		if (currentTime > this._lastScroll && currentTime < this._lastScroll + WAIT_MS) {
-			// within wait period - consume this event (but do nothing)
-			// to prevent accidental rapid scrolling
-			return true;
+		let currentTime = new Date().getTime();
+		if (currentTime < this._lastScrollTime + this._delay) {
+			// Ensure a minimum delay between workspace scrolls
+			return;
 		}
-		this._lastScroll = currentTime;
-
+		this._lastScrollTime = currentTime;
 
 		let newIndex = global.screen.get_active_workspace().index() + diff;
 		this._activate(newIndex);
-		return true;
-	},
-}
+	}
+});
 
 function init(meta) {
-	let ext = new Ext();
-	return ext;
+	/* do nothing */
 }
 
-function main() {
-	init().enable();
-};
+let _scroller;
+
+function enable() {
+	_scroller = new WorkspaceScroller;
+}
+
+function disable() {
+	_scroller.destroy();
+}
