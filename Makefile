@@ -10,7 +10,7 @@ $(PROJECT).zip: compile
 	zip -ro $(PROJECT).zip $(PROJECT)
 
 install: compile
-	rsync -avP $(PROJECT)/ $(HOME)/.local/share/gnome-shell/extensions/$(UUID)/
+	rsync -aP $(PROJECT)/ "$(HOME)/.local/share/gnome-shell/extensions/$(UUID)/"
 
 compile: $(SCHEMA_BIN)
 
