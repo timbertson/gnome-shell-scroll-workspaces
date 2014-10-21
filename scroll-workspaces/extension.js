@@ -14,8 +14,8 @@ const WorkspaceScroller = new Lang.Class({
 		this._panelScrollEventId = Main.panel.actor.connect('scroll-event', Lang.bind(this, this._onScrollEvent));
 		this._lastScrollTime = new Date().getTime();
 		this._settings = new Gio.Settings({ schema_id: PREFS_SCHEMA });
-		this._settingsChangedId = this._settings.connect('changed::scroll-delay', Lang.bind(this, this._updateDelay));
-		this._updateDelay();
+		this._settingsChangedId = this._settings.connect('changed', Lang.bind(this, this._updateSettings));
+		this._updateSettings();
 	},
 
 	destroy: function() {
@@ -29,12 +29,17 @@ const WorkspaceScroller = new Lang.Class({
 		}
 	},
 
-	_updateDelay: function() {
+	_updateSettings: function() {
 		this._delay = this._settings.get_int('scroll-delay');
+		this._noLast = this._settings.get_boolean('ignore-last-workspace');
 	},
 
 	_activate : function(index) {
-		if (index >= 0 && index < global.screen.n_workspaces) {
+		let off = 0;
+		if (this._noLast) {
+			off = 1;
+		}
+		if (index >= 0 && index < global.screen.n_workspaces - off) {
 			let metaWorkspace = global.screen.get_workspace_by_index(index);
 			metaWorkspace.activate(global.get_current_time());
 		}
