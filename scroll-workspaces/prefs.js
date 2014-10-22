@@ -33,7 +33,7 @@ function updateWidget() {
 	let noLast = settings.get_boolean('ignore-last-workspace');
 	let delay = settings.get_int('scroll-delay');
 	builder.get_object('lastworkspaceswitch').set_active(noLast);
-	builder.get_object('scrolldelayspin').set_value(delay);
+	builder.get_object('scrolldelayscale').set_value(delay);
 }
 
 function buildPrefsWidget() {
@@ -42,8 +42,8 @@ function buildPrefsWidget() {
 	builder.get_object('lastworkspaceswitch').connect('notify::active', function(widget) {
 		settings.set_boolean('ignore-last-workspace', widget.active);
 	});
-	builder.get_object('scrolldelayspin').connect('changed', function(widget) {
-		settings.set_int('scroll-delay', widget.value);
+	builder.get_object('scrolldelayscale').connect('value-changed', function(widget) {
+		settings.set_int('scroll-delay', widget.get_value());
 	});
 	settingsChangedId = settings.connect('changed', updateWidget);
 	return builder.get_object('mainbox');
