@@ -11,13 +11,13 @@ SCHEMAC = glib-compile-schemas
 ZIP = zip -ro
 CP = rsync -aP
 
-$(PROJECT).zip: clean-backups compile
-	$(ZIP) $(PROJECT).zip $(PROJECT)
+$(PROJECT).zip: compile
+	$(ZIP) $@ $(PROJECT)
 
-install: clean-backups compile
+install: compile
 	$(CP) $(PROJECT)/ "$(HOME)/.local/share/gnome-shell/extensions/$(UUID)/"
 
-compile: $(SCHEMA_BIN)
+compile: clean-backups $(SCHEMA_BIN)
 
 $(SCHEMA_BIN): $(SCHEMA_SRC)
 	$(SCHEMAC) $(SCHEMAS_PATH)
