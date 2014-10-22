@@ -1,5 +1,4 @@
 const Gio = imports.gi.Gio;
-const Lang = imports.lang;
 const Gtk = imports.gi.Gtk;
 const GtkBuilder = Gtk.Builder;
 const SettingsSchemaSource = Gio.SettingsSchemaSource;
@@ -7,16 +6,16 @@ const SettingsSchemaSource = Gio.SettingsSchemaSource;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
-const UI_FILE = Me.dir.get_path() + '/prefs.ui';
-const PREFS_SCHEMA = 'org.gnome.shell.extensions.scroll-workspaces';
+const PREFS_UI = 'prefs.ui';
 
 function loadSettings() {
+	let prefsSchema = Me.metadata['settings-schema'];
 	let localSchemas = Me.dir.get_child('schemas').get_path();
 	let systemSchemas = SettingsSchemaSource.get_default();
 	let schemaSource = SettingsSchemaSource.new_from_directory(localSchemas, systemSchemas, true);
-	let schemaObj = schemaSource.lookup(PREFS_SCHEMA, true);
+	let schemaObj = schemaSource.lookup(prefsSchema, true);
 	if (!schemaObj) {
-		throw new Error('Schema ' + PREFS_SCHEMA + ' could not be found for extension ' + Me.metadata.uuid + '. Please check your installation.');
+		throw new Error('Schema ' + prefsSchema + ' could not be found for extension ' + Me.metadata.uuid + '. Please check your installation.');
 	}
 	return new Gio.Settings({ settings_schema: schemaObj });
 }
@@ -37,7 +36,7 @@ function updateWidget() {
 }
 
 function buildPrefsWidget() {
-	builder.add_from_file(UI_FILE);
+	builder.add_from_file(Me.dir.get_path() + '/' + PREFS_UI);
 	updateWidget();
 	builder.get_object('lastworkspaceswitch').connect('notify::active', function(widget) {
 		settings.set_boolean('ignore-last-workspace', widget.active);
@@ -45,6 +44,6 @@ function buildPrefsWidget() {
 	builder.get_object('scrolldelayscale').connect('value-changed', function(widget) {
 		settings.set_int('scroll-delay', widget.get_value());
 	});
-	settingsChangedId = settings.connect('changed', updateWidget);
+	let settingsChangedId = settings.connect('changed', updateWidget);
 	return builder.get_object('mainbox');
 }
