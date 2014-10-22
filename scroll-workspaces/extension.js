@@ -34,7 +34,7 @@ const WorkspaceScroller = new Lang.Class({
 
 	_activate : function(index) {
 		let off = 0;
-		if (this._noLast) {
+		if (!Main.overview.visible && this._noLast) {
 			off = 1;
 		}
 		if (index >= 0 && index < global.screen.n_workspaces - off) {
