@@ -1,5 +1,6 @@
 const Gio = imports.gi.Gio;
 const Clutter = imports.gi.Clutter;
+const Shell = imports.gi.Shell;
 const Lang = imports.lang;
 
 const Main = imports.ui.main;
@@ -47,7 +48,7 @@ const WorkspaceScroller = new Lang.Class({
 
 	_onScrollEvent : function(actor, event) {
 		let source = event.get_source();
-		if (source.has_style_class_name('panel-status-indicators-box') || source.has_style_class_name('panel-status-button')) {
+		if (source.__proto__ != Shell.GenericContainer.prototype) {
 			// Actors in the "status" area may have their own scroll events
 			return;
 		}
