@@ -1,11 +1,12 @@
-const Gio = imports.gi.Gio;
 const Clutter = imports.gi.Clutter;
 const Shell = imports.gi.Shell;
 const Lang = imports.lang;
 
 const Main = imports.ui.main;
 
-const PREFS_SCHEMA = 'org.gnome.shell.extensions.scroll-workspaces';
+const ExtensionUtils = imports.misc.extensionUtils;
+const Me = ExtensionUtils.getCurrentExtension();
+const Prefs = Me.imports.prefs;
 
 const WorkspaceScroller = new Lang.Class({
 	Name: 'WorkspaceScroller',
@@ -14,7 +15,7 @@ const WorkspaceScroller = new Lang.Class({
 		Main.panel.actor.reactive = true;
 		this._panelScrollEventId = Main.panel.actor.connect('scroll-event', Lang.bind(this, this._onScrollEvent));
 		this._lastScrollTime = new Date().getTime();
-		this._settings = new Gio.Settings({ schema_id: PREFS_SCHEMA });
+		this._settings = Prefs.loadSettings();
 		this._settingsChangedId = this._settings.connect('changed', Lang.bind(this, this._updateSettings));
 		this._updateSettings();
 	},
