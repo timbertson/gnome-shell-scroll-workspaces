@@ -1,7 +1,5 @@
 const Gio = imports.gi.Gio;
 const Gtk = imports.gi.Gtk;
-const GtkBuilder = Gtk.Builder;
-const SettingsSchemaSource = Gio.SettingsSchemaSource;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
@@ -11,8 +9,8 @@ const PREFS_UI = 'prefs.ui';
 function loadSettings() {
 	let prefsSchema = Me.metadata['settings-schema'];
 	let localSchemas = Me.dir.get_child('schemas').get_path();
-	let systemSchemas = SettingsSchemaSource.get_default();
-	let schemaSource = SettingsSchemaSource.new_from_directory(localSchemas, systemSchemas, true);
+	let systemSchemas = Gio.SettingsSchemaSource.get_default();
+	let schemaSource = Gio.SettingsSchemaSource.new_from_directory(localSchemas, systemSchemas, true);
 	let schemaObj = schemaSource.lookup(prefsSchema, true);
 	if (!schemaObj) {
 		throw new Error('Schema ' + prefsSchema + ' could not be found for extension ' + Me.metadata.uuid + '. Please check your installation.');
