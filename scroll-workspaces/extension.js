@@ -15,7 +15,7 @@ const WorkspaceScroller = new Lang.Class({
 		Main.panel.actor.reactive = true;
 		this._panelScrollEventId = Main.panel.actor.connect('scroll-event', Lang.bind(this, this._onScrollEvent));
 		this._lastScrollTime = new Date().getTime();
-		this._settings = Prefs.loadSettings();
+		this._settings = Prefs.getSettings();
 	},
 
 	destroy: function() {
@@ -32,7 +32,7 @@ const WorkspaceScroller = new Lang.Class({
 		return this._settings.get_boolean('ignore-last-workspace');
 	},
 
-	_activate : function(index) {
+	_activate: function(index) {
 		let off = 0;
 		if (!Main.overview.visible && this._noLast) {
 			off = 1;
@@ -43,7 +43,7 @@ const WorkspaceScroller = new Lang.Class({
 		}
 	},
 
-	_onScrollEvent : function(actor, event) {
+	_onScrollEvent: function(actor, event) {
 		let source = event.get_source();
 		if (source.__proto__ != Shell.GenericContainer.prototype) {
 			// Actors in the "status" area may have their own scroll events
@@ -79,7 +79,7 @@ function init(meta) {
 let _scroller;
 
 function enable() {
-	_scroller = new WorkspaceScroller;
+	_scroller = new WorkspaceScroller();
 }
 
 function disable() {

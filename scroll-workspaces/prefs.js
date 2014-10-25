@@ -7,7 +7,7 @@ const Me = ExtensionUtils.getCurrentExtension();
 
 const PREFS_UI = 'prefs.ui';
 
-function loadSettings() {
+function getSettings() {
 	let prefsSchema = Me.metadata['settings-schema'];
 	let localSchemas = Me.dir.get_child('schemas').get_path();
 	let systemSchemas = Gio.SettingsSchemaSource.get_default();
@@ -24,7 +24,7 @@ const WorkspaceScrollerPrefsGUI = new Lang.Class({
 
 	_init: function() {
 		this._builder = new Gtk.Builder();
-		this._settings = loadSettings();
+		this._settings = getSettings();
 		let noLast = this._settings.get_boolean('ignore-last-workspace');
 		let delay = this._settings.get_int('scroll-delay');
 		this._settings.set_boolean('ignore-last-workspace', noLast);
