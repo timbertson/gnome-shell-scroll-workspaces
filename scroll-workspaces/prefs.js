@@ -1,5 +1,6 @@
 const Gio = imports.gi.Gio;
 const Gtk = imports.gi.Gtk;
+const Lang = imports.lang;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
@@ -18,30 +19,43 @@ function loadSettings() {
 	return new Gio.Settings({ settings_schema: schemaObj });
 }
 
-let builder;
-let settings;
+const WorkspaceScrollerPrefsGUI = new Lang.Class({
+	Name: 'WorkspaceScrollerPrefsGUI',
 
+	_init: function() {
+		this._builder = new Gtk.Builder();
+		this._settings = loadSettings();
+		let noLast = this._settings.get_boolean('ignore-last-workspace');
+		let delay = this._settings.get_int('scroll-delay');
+		this._settings.set_boolean('ignore-last-workspace', noLast);
+		this._settings.set_int('scroll-delay', delay);
+	},
+
+	_updateWidget: function() {
+		let noLast = this._settings.get_boolean('ignore-last-workspace');
+		let delay = this._settings.get_int('scroll-delay');
+		this._builder.get_object('lastworkspaceswitch').set_active(noLast);
+		this._builder.get_object('scrolldelayscale').set_value(delay);
+	},
+
+	buildPrefsWidget: function() {
+		this._builder.add_from_file(Me.dir.get_path() + '/' + PREFS_UI);
+		this._updateWidget();
+		let settingsChangedId = this._settings.connect('changed', Lang.bind(this, this._updateWidget));
+		this._builder.get_object('lastworkspaceswitch').connect('notify::active', Lang.bind(this, function(widget) {
+			this._settings.set_boolean('ignore-last-workspace', widget.get_active());
+		}));
+		this._builder.get_object('scrolldelayscale').connect('value-changed', Lang.bind(this, function(widget) {
+			this._settings.set_int('scroll-delay', widget.get_value());
+		}));
+		return this._builder.get_object('mainbox');
+	}
+});
+
+let _prefsWidget;
 function init() {
-	builder = new Gtk.Builder();
-	settings = loadSettings();
+	_prefsWidget = new WorkspaceScrollerPrefsGUI();
 }
-
-function updateWidget() {
-	let noLast = settings.get_boolean('ignore-last-workspace');
-	let delay = settings.get_int('scroll-delay');
-	builder.get_object('lastworkspaceswitch').set_active(noLast);
-	builder.get_object('scrolldelayscale').set_value(delay);
-}
-
 function buildPrefsWidget() {
-	builder.add_from_file(Me.dir.get_path() + '/' + PREFS_UI);
-	updateWidget();
-	builder.get_object('lastworkspaceswitch').connect('notify::active', function(widget) {
-		settings.set_boolean('ignore-last-workspace', widget.active);
-	});
-	builder.get_object('scrolldelayscale').connect('value-changed', function(widget) {
-		settings.set_int('scroll-delay', widget.get_value());
-	});
-	let settingsChangedId = settings.connect('changed', updateWidget);
-	return builder.get_object('mainbox');
+	return _prefsWidget.buildPrefsWidget();
 }
