@@ -19,8 +19,8 @@ function getSettings() {
 	return new Gio.Settings({ settings_schema: schemaObj });
 }
 
-const WorkspaceScrollerPrefsGUI = new Lang.Class({
-	Name: 'WorkspaceScrollerPrefsGUI',
+const WorkspaceScrollerPrefsWidget = new Lang.Class({
+	Name: 'WorkspaceScrollerPrefsWidget',
 
 	_init: function() {
 		this._builder = new Gtk.Builder();
@@ -53,9 +53,11 @@ const WorkspaceScrollerPrefsGUI = new Lang.Class({
 });
 
 let _prefsWidget;
+
 function init() {
 	_prefsWidget = new WorkspaceScrollerPrefsGUI();
 }
+
 function buildPrefsWidget() {
 	return _prefsWidget.buildPrefsWidget();
 }
