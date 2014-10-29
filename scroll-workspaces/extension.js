@@ -7,6 +7,7 @@ const Main = imports.ui.main;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Prefs = Me.imports.prefs;
+const Settings = Prefs.getSettings();
 
 const WorkspaceScroller = new Lang.Class({
 	Name: 'WorkspaceScroller',
@@ -15,7 +16,6 @@ const WorkspaceScroller = new Lang.Class({
 		Main.panel.actor.reactive = true;
 		this._panelScrollEventId = Main.panel.actor.connect('scroll-event', Lang.bind(this, this._onScrollEvent));
 		this._lastScrollTime = new Date().getTime();
-		this._settings = Prefs.getSettings();
 	},
 
 	destroy: function() {
@@ -26,10 +26,10 @@ const WorkspaceScroller = new Lang.Class({
 	},
 
 	get _delay() {
-		return this._settings.get_int('scroll-delay');
+		return Settings.get_int('scroll-delay');
 	},
 	get _noLast() {
-		return this._settings.get_boolean('ignore-last-workspace');
+		return Settings.get_boolean('ignore-last-workspace');
 	},
 
 	_activate: function(index) {
