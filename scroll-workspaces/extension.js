@@ -32,11 +32,11 @@ const WorkspaceScroller = new Lang.Class({
 		return Prefs.settings.get_boolean('ignore-last-workspace');
 	},
 
-	_activate: function(target) {
-		if (target.index() == global.screen.n_workspaces - 1 && !Main.overview.visible && this._noLast) {
+	_activate: function(toActivate) {
+		if (toActivate.index() == global.screen.n_workspaces - 1 && !Main.overview.visible && this._noLast) {
 			return;
 		}
-		target.activate(global.get_current_time());
+		toActivate.activate(global.get_current_time());
 	},
 
 	_onScrollEvent: function(actor, event) {
@@ -47,12 +47,12 @@ const WorkspaceScroller = new Lang.Class({
 		}
 
 		let direction = event.get_scroll_direction();
-		let current = global.screen.get_active_workspace();
-		let target;
+		let activeWorkspace = global.screen.get_active_workspace();
+		let toActivate;
 		if (direction == Clutter.ScrollDirection.DOWN) {
-			target = current.get_neighbor(Meta.MotionDirection.DOWN);
+			toActivate = activeWorkspace.get_neighbor(Meta.MotionDirection.DOWN);
 		} else if (direction == Clutter.ScrollDirection.UP) {
-			target = current.get_neighbor(Meta.MotionDirection.UP);
+			toActivate = activeWorkspace.get_neighbor(Meta.MotionDirection.UP);
 		} else {
 			return;
 		}
@@ -64,7 +64,7 @@ const WorkspaceScroller = new Lang.Class({
 		}
 		this._lastScrollTime = currentTime;
 
-		this._activate(target);
+		this._activate(toActivate);
 	}
 });
 
