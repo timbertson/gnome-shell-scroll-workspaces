@@ -1,6 +1,7 @@
+const Lang = imports.lang;
 const Clutter = imports.gi.Clutter;
 const Shell = imports.gi.Shell;
-const Lang = imports.lang;
+const Meta = imports.gi.Meta;
 
 const Main = imports.ui.main;
 
@@ -31,15 +32,11 @@ const WorkspaceScroller = new Lang.Class({
 		return Prefs.settings.get_boolean('ignore-last-workspace');
 	},
 
-	_activate: function(index) {
-		let off = 0;
-		if (!Main.overview.visible && this._noLast) {
-			off = 1;
+	_activate: function(target) {
+		if (target.index() == global.screen.n_workspaces - 1 && !Main.overview.visible && this._noLast) {
+			return;
 		}
-		if (index >= 0 && index < global.screen.n_workspaces - off) {
-			let metaWorkspace = global.screen.get_workspace_by_index(index);
-			metaWorkspace.activate(global.get_current_time());
-		}
+		target.activate(global.get_current_time());
 	},
 
 	_onScrollEvent: function(actor, event) {
@@ -50,11 +47,12 @@ const WorkspaceScroller = new Lang.Class({
 		}
 
 		let direction = event.get_scroll_direction();
-		let diff = 0;
+		let current = global.screen.get_active_workspace();
+		let target;
 		if (direction == Clutter.ScrollDirection.DOWN) {
-			diff = 1;
+			target = current.get_neighbor(Meta.MotionDirection.DOWN);
 		} else if (direction == Clutter.ScrollDirection.UP) {
-			diff = -1;
+			target = current.get_neighbor(Meta.MotionDirection.UP);
 		} else {
 			return;
 		}
@@ -66,8 +64,7 @@ const WorkspaceScroller = new Lang.Class({
 		}
 		this._lastScrollTime = currentTime;
 
-		let newIndex = global.screen.get_active_workspace().index() + diff;
-		this._activate(newIndex);
+		this._activate(target);
 	}
 });
 
