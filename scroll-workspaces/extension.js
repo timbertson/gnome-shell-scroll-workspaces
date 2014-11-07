@@ -16,7 +16,7 @@ const WorkspaceScroller = new Lang.Class({
 	_init: function() {
 		Main.panel.actor.reactive = true;
 		this._panelScrollEventId = Main.panel.actor.connect('scroll-event', Lang.bind(this, this._onScrollEvent));
-		this._lastScrollTime = new Date().getTime();
+		this._lastScrollTime = global.get_current_time();
 	},
 
 	destroy: function() {
@@ -37,7 +37,7 @@ const WorkspaceScroller = new Lang.Class({
 		if (toActivate.index() == global.screen.n_workspaces - 1 && !Main.overview.visible && this._noLast) {
 			return;
 		}
-		this._lastScrollTime = currentTime;
+		this._lastScrollTime = global.get_current_time();
 		toActivate.activate(global.get_current_time());
 	},
 
@@ -48,8 +48,7 @@ const WorkspaceScroller = new Lang.Class({
 			return;
 		}
 
-		let currentTime = new Date().getTime();
-		if (currentTime < this._lastScrollTime + this._delay) {
+		if (global.get_current_time() < this._lastScrollTime + this._delay) {
 			// Ensure a minimum delay between workspace scrolls
 			return;
 		}
