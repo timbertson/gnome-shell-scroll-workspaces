@@ -42,7 +42,7 @@ const WorkspaceScroller = new Lang.Class({
 
 	_onScrollEvent: function(actor, event) {
 		let source = event.get_source();
-		if (source.__proto__ != Shell.GenericContainer.prototype) {
+		if (!(source instanceof Shell.GenericContainer)) {
 			// Actors in the "status" area may have their own scroll events
 			return Clutter.EVENT_PROPAGATE;
 		}
