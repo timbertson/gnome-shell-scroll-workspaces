@@ -17,23 +17,12 @@ const WorkspaceScroller = new Lang.Class({
 		Main.panel.actor.reactive = true;
 		this._panelScrollEventId = Main.panel.actor.connect('scroll-event', Lang.bind(this, this._onScrollEvent));
 		this._lastScrollTime = new Date().getTime();
-		// Add workaround for https://bugzilla.gnome.org/show_bug.cgi?id=737534
-		this._onPageChangedId = Main.overview.viewSelector.connect('page-changed', Lang.bind(this, this._onPageChanged));
 	},
 
 	destroy: function() {
 		if (this._panelScrollEventId) {
 			Main.panel.actor.disconnect(this._panelScrollEventId);
 			this._panelScrollEventId = 0;
-		}
-		if (this._onPageChangedId) {
-			Main.overview.viewSelector.disconnect(this._onPageChangedId);
-			this._onPageChangedId = 0;
-		}
-		// In case the extension is disabled with the temporary injection active
-		if (this._workspaceActivateFunc) {
-			Meta.Workspace.prototype.activate = this._workspaceActivateFunc;
-			delete this._workspaceActivateFunc;
 		}
 	},
 
@@ -49,18 +38,6 @@ const WorkspaceScroller = new Lang.Class({
 			return;
 		}
 		toActivate.activate(global.get_current_time());
-	},
-
-	_onPageChanged: function() {
-		let activePage = Main.overview.viewSelector.getActivePage();
-		if (activePage != ViewSelector.ViewPage.WINDOWS) {
-			this._workspaceActivateFunc = Meta.Workspace.prototype.activate;
-			Meta.Workspace.prototype.activate = function() {};
-		}
-		else if (this._workspaceActivateFunc) {
-			Meta.Workspace.prototype.activate = this._workspaceActivateFunc;
-			delete this._workspaceActivateFunc;
-		}
 	},
 
 	_onScrollEvent: function(actor, event) {
