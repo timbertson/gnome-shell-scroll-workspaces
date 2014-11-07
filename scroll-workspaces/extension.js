@@ -4,7 +4,6 @@ const Shell = imports.gi.Shell;
 const Meta = imports.gi.Meta;
 
 const Main = imports.ui.main;
-const ViewSelector = imports.ui.viewSelector;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
@@ -33,43 +32,46 @@ const WorkspaceScroller = new Lang.Class({
 		return Prefs.settings.get_boolean('ignore-last-workspace');
 	},
 
-	_activate: function(toActivate) {
-		if (toActivate.index() == global.screen.n_workspaces - 1 && !Main.overview.visible && this._noLast) {
+	_activate: function(ws) {
+		if (ws.index() == global.screen.n_workspaces - 1 && !Main.overview.visible && this._noLast) {
 			return;
 		}
 		this._lastScrollTime = global.get_current_time();
-		toActivate.activate(global.get_current_time());
+		Main.wm.actionMoveWorkspace(ws);
 	},
 
 	_onScrollEvent: function(actor, event) {
 		let source = event.get_source();
 		if (source.__proto__ != Shell.GenericContainer.prototype) {
 			// Actors in the "status" area may have their own scroll events
-			return;
+			return Clutter.EVENT_PROPAGATE;
 		}
 
-		if (global.get_current_time() < this._lastScrollTime + this._delay) {
-			// Ensure a minimum delay between workspace scrolls
-			return;
-		}
-
-		let direction = event.get_scroll_direction();
 		let motion;
-		if (direction == Clutter.ScrollDirection.DOWN) {
-			motion = Meta.MotionDirection.DOWN;
-		} else if (direction == Clutter.ScrollDirection.UP) {
+		switch (event.get_scroll_direction()) {
+		case Clutter.ScrollDirection.UP:
 			motion = Meta.MotionDirection.UP;
-		} else if (direction == Clutter.ScrollDirection.LEFT) {
+			break;
+		case Clutter.ScrollDirection.DOWN:
+			motion = Meta.MotionDirection.DOWN;
+			break;
+		case Clutter.ScrollDirection.LEFT:
 			motion = Meta.MotionDirection.LEFT;
-		} else if (direction == Clutter.ScrollDirection.RIGHT) {
+			break;
+		case Clutter.ScrollDirection.RIGHT:
 			motion = Meta.MotionDirection.RIGHT;
-		} else {
-			return;
+			break;
+		default:
+			return Clutter.EVENT_PROPAGATE;
 		}
-		let activeWorkspace = global.screen.get_active_workspace();
-		let toActivate = activeWorkspace.get_neighbor(motion);
+		let activeWs = global.screen.get_active_workspace();
+		let ws = activeWs.get_neighbor(motion);
 
-		this._activate(toActivate);
+		if (global.get_current_time() >= this._lastScrollTime + this._delay) {
+			// Ensure a minimum delay between workspace scrolls
+			this._activate(ws);
+		}
+		return Clutter.EVENT_STOP;
 	}
 });
 
