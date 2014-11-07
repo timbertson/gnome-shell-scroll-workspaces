@@ -1,84 +1,90 @@
-const Clutter = imports.gi.Clutter;
 const Lang = imports.lang;
+const Clutter = imports.gi.Clutter;
+const Shell = imports.gi.Shell;
+const Meta = imports.gi.Meta;
+
 const Main = imports.ui.main;
 
-var WAIT_MS = 200;
+const ExtensionUtils = imports.misc.extensionUtils;
+const Me = ExtensionUtils.getCurrentExtension();
+const Prefs = Me.imports.prefs;
 
-function Ext() {
-	this._init.apply(this, arguments);
-}
+const WorkspaceScroller = new Lang.Class({
+	Name: 'WorkspaceScroller',
 
-Ext.prototype = {
-	_init: function(){
-		this._panel = Main.panel;
-		this._panelBinding = null;
-		this._lastScroll = new Date().getTime();
+	_init: function() {
+		Main.panel.actor.reactive = true;
+		this._panelScrollEventId = Main.panel.actor.connect('scroll-event', Lang.bind(this, this._onScrollEvent));
+		this._lastScrollTime = global.get_current_time();
 	},
 
-	disable: function() {
-		if (this._panelBinding) {
-			this._panel.actor.disconnect(this._panelBinding);
-			this._panelBinding = null;
+	destroy: function() {
+		if (this._panelScrollEventId) {
+			Main.panel.actor.disconnect(this._panelScrollEventId);
+			this._panelScrollEventId = 0;
 		}
 	},
 
-	enable: function() {
-		this._panel.reactive = true;
-		if (this._panelBinding) {
-			// enabled twice in a row? should be impossible
-			this.disable();
+	get _delay() {
+		return Prefs.settings.get_int('scroll-delay');
+	},
+	get _noLast() {
+		return Prefs.settings.get_boolean('ignore-last-workspace');
+	},
+
+	_activate: function(ws) {
+		if (ws.index() == global.screen.n_workspaces - 1 && !Main.overview.visible && this._noLast) {
+			return;
 		}
-		this._panelBinding = this._panel.actor.connect('scroll-event', Lang.bind(this, this._onScrollEvent));
+		this._lastScrollTime = global.get_current_time();
+		Main.wm.actionMoveWorkspace(ws);
 	},
 
-	_activate : function (index) {
-		let metaWorkspace = global.screen.get_workspace_by_index(index);
-		if (metaWorkspace) metaWorkspace.activate(true);
-	},
-
-	_onScrollEvent : function(actor, event) {
+	_onScrollEvent: function(actor, event) {
 		let source = event.get_source();
-		if (source != actor) {
-			// Actors in the "status" area often have their own scroll events,
-			// so only respond to scroll events on the panel itself
-			// or from the panel's center box.
-			let fromCenter = this._panel._centerBox && this._panel._centerBox.contains && this._panel._centerBox.contains(source);
-			if (!fromCenter) {
-				return false;
-			}
+		if (!(source instanceof Shell.GenericContainer)) {
+			// Actors in the "status" area may have their own scroll events
+			return Clutter.EVENT_PROPAGATE;
 		}
 
-		let direction = event.get_scroll_direction();
-		let diff = 0;
-		if (direction == Clutter.ScrollDirection.DOWN) {
-			diff = 1;
-		} else if (direction == Clutter.ScrollDirection.UP) {
-			diff = -1;
-		} else {
-			return false;
+		let motion;
+		switch (event.get_scroll_direction()) {
+		case Clutter.ScrollDirection.UP:
+			motion = Meta.MotionDirection.UP;
+			break;
+		case Clutter.ScrollDirection.DOWN:
+			motion = Meta.MotionDirection.DOWN;
+			break;
+		case Clutter.ScrollDirection.LEFT:
+			motion = Meta.MotionDirection.LEFT;
+			break;
+		case Clutter.ScrollDirection.RIGHT:
+			motion = Meta.MotionDirection.RIGHT;
+			break;
+		default:
+			return Clutter.EVENT_PROPAGATE;
 		}
+		let activeWs = global.screen.get_active_workspace();
+		let ws = activeWs.get_neighbor(motion);
 
-		var currentTime = new Date().getTime();
-		// global.log("scroll time diff = " + (currentTime - this._lastScroll));
-		if (currentTime > this._lastScroll && currentTime < this._lastScroll + WAIT_MS) {
-			// within wait period - consume this event (but do nothing)
-			// to prevent accidental rapid scrolling
-			return true;
+		if (global.get_current_time() >= this._lastScrollTime + this._delay) {
+			// Ensure a minimum delay between workspace scrolls
+			this._activate(ws);
 		}
-		this._lastScroll = currentTime;
-
-
-		let newIndex = global.screen.get_active_workspace().index() + diff;
-		this._activate(newIndex);
-		return true;
-	},
-}
+		return Clutter.EVENT_STOP;
+	}
+});
 
 function init(meta) {
-	let ext = new Ext();
-	return ext;
+	/* do nothing */
 }
 
-function main() {
-	init().enable();
-};
+let _scroller;
+
+function enable() {
+	_scroller = new WorkspaceScroller();
+}
+
+function disable() {
+	_scroller.destroy();
+}
