@@ -77,6 +77,10 @@ const WorkspaceScroller = new Lang.Class({
 			toActivate = activeWorkspace.get_neighbor(Meta.MotionDirection.DOWN);
 		} else if (direction == Clutter.ScrollDirection.UP) {
 			toActivate = activeWorkspace.get_neighbor(Meta.MotionDirection.UP);
+		} else if (direction == Clutter.ScrollDirection.LEFT) {
+			toActivate = activeWorkspace.get_neighbor(Meta.MotionDirection.LEFT);
+		} else if (direction == Clutter.ScrollDirection.RIGHT) {
+			toActivate = activeWorkspace.get_neighbor(Meta.MotionDirection.RIGHT);
 		} else {
 			return;
 		}
