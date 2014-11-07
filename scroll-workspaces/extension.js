@@ -30,6 +30,11 @@ const WorkspaceScroller = new Lang.Class({
 			Main.overview.viewSelector.disconnect(this._onPageChangedId);
 			this._onPageChangedId = 0;
 		}
+		// In case the extension is disabled with the temporary injection active
+		if (this._workspaceActivateFunc) {
+			Meta.Workspace.prototype.activate = this._workspaceActivateFunc;
+			delete this._workspaceActivateFunc;
+		}
 	},
 
 	get _delay() {
