@@ -55,19 +55,20 @@ const WorkspaceScroller = new Lang.Class({
 		}
 
 		let direction = event.get_scroll_direction();
-		let activeWorkspace = global.screen.get_active_workspace();
-		let toActivate;
+		let motion;
 		if (direction == Clutter.ScrollDirection.DOWN) {
-			toActivate = activeWorkspace.get_neighbor(Meta.MotionDirection.DOWN);
+			motion = Meta.MotionDirection.DOWN;
 		} else if (direction == Clutter.ScrollDirection.UP) {
-			toActivate = activeWorkspace.get_neighbor(Meta.MotionDirection.UP);
+			motion = Meta.MotionDirection.UP;
 		} else if (direction == Clutter.ScrollDirection.LEFT) {
-			toActivate = activeWorkspace.get_neighbor(Meta.MotionDirection.LEFT);
+			motion = Meta.MotionDirection.LEFT;
 		} else if (direction == Clutter.ScrollDirection.RIGHT) {
-			toActivate = activeWorkspace.get_neighbor(Meta.MotionDirection.RIGHT);
+			motion = Meta.MotionDirection.RIGHT;
 		} else {
 			return;
 		}
+		let activeWorkspace = global.screen.get_active_workspace();
+		let toActivate = activeWorkspace.get_neighbor(motion);
 
 		this._activate(toActivate);
 	}
