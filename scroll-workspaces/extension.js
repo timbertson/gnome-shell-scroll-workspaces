@@ -37,6 +37,7 @@ const WorkspaceScroller = new Lang.Class({
 		if (toActivate.index() == global.screen.n_workspaces - 1 && !Main.overview.visible && this._noLast) {
 			return;
 		}
+		this._lastScrollTime = currentTime;
 		toActivate.activate(global.get_current_time());
 	},
 
@@ -44,6 +45,12 @@ const WorkspaceScroller = new Lang.Class({
 		let source = event.get_source();
 		if (source.__proto__ != Shell.GenericContainer.prototype) {
 			// Actors in the "status" area may have their own scroll events
+			return;
+		}
+
+		let currentTime = new Date().getTime();
+		if (currentTime < this._lastScrollTime + this._delay) {
+			// Ensure a minimum delay between workspace scrolls
 			return;
 		}
 
@@ -61,13 +68,6 @@ const WorkspaceScroller = new Lang.Class({
 		} else {
 			return;
 		}
-
-		let currentTime = new Date().getTime();
-		if (currentTime < this._lastScrollTime + this._delay) {
-			// Ensure a minimum delay between workspace scrolls
-			return;
-		}
-		this._lastScrollTime = currentTime;
 
 		this._activate(toActivate);
 	}
