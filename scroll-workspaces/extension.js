@@ -1,8 +1,13 @@
 const Clutter = imports.gi.Clutter;
 const Lang = imports.lang;
 const Main = imports.ui.main;
+const ExtensionUtils = imports.misc.extensionUtils;
+const Extension = ExtensionUtils.getCurrentExtension();
+const Settings = Extension.imports.settings;
 
 var WAIT_MS = 200;
+var BUFFER_SHOW_ALL_WORKSPACES = 1;
+var BUFFER_IGNORE_LAST_WORKSPACE = 2;
 
 function Ext() {
 	this._init.apply(this, arguments);
@@ -13,6 +18,19 @@ Ext.prototype = {
 		this._panel = Main.panel;
 		this._panelBinding = null;
 		this._lastScroll = new Date().getTime();
+
+		var self = this;
+		// setup ignore-last-workspace pref
+		this._prefs = new Settings.Prefs();
+		(function() {
+			var pref = this._prefs.IGNORE_LAST_WORKSPACE;
+			var update = function() {
+				self._tailBuffer = pref.get() ? BUFFER_IGNORE_LAST_WORKSPACE : BUFFER_SHOW_ALL_WORKSPACES : ;
+			};
+			pref.changed(update);
+			update(); // set initial value
+		}
+		)();
 	},
 
 	disable: function() {
@@ -69,8 +87,11 @@ Ext.prototype = {
 
 
 		let newIndex = global.screen.get_active_workspace().index() + diff;
-		this._activate(newIndex);
-		return true;
+		if (newIndex < global.screen.n_workspaces - this._tailBuffer) ) {
+			this._activate(newIndex);
+			return true;
+		}
+		return false;
 	},
 }
 
