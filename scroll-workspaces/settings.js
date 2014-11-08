@@ -34,4 +34,12 @@ function Prefs() {
 		changed: function(cb) { return settings.connect('changed::' + this.key, cb); },
 		disconnect: function() { return settings.disconnect.apply(settings, arguments); },
 	};
+
+	this.SCROLL_DELAY = {
+		key: 'scroll-delay',
+		get: function() { return settings.get_int(this.key); },
+		set: function(v) { settings.set_int(this.key, v); },
+		changed: function(cb) { return settings.connect('changed::' + this.key, cb); },
+		disconnect: function() { return settings.disconnect.apply(settings, arguments); },
+	};
 };

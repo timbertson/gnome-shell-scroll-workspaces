@@ -1,2 +1,2 @@
 #!bash -eu
-gup -u schemas/gschemas.compiled
+gup -u scroll-workspaces/schemas/gschemas.compiled

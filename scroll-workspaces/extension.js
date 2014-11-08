@@ -4,10 +4,12 @@ const Main = imports.ui.main;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Extension = ExtensionUtils.getCurrentExtension();
 const Settings = Extension.imports.settings;
+const Meta = imports.gi.Meta;
+const Shell = imports.gi.Shell;
 
 var WAIT_MS = 200;
-var BUFFER_SHOW_ALL_WORKSPACES = 1;
-var BUFFER_IGNORE_LAST_WORKSPACE = 2;
+var BUFFER_SHOW_ALL_WORKSPACES = 0;
+var BUFFER_IGNORE_LAST_WORKSPACE = 1;
 
 function Ext() {
 	this._init.apply(this, arguments);
@@ -17,15 +19,26 @@ Ext.prototype = {
 	_init: function(){
 		this._panel = Main.panel;
 		this._panelBinding = null;
-		this._lastScroll = new Date().getTime();
+		this._lastScroll = Date.now();
 
 		var self = this;
 		// setup ignore-last-workspace pref
 		this._prefs = new Settings.Prefs();
 		(function() {
-			var pref = this._prefs.IGNORE_LAST_WORKSPACE;
+			var pref = self._prefs.IGNORE_LAST_WORKSPACE;
 			var update = function() {
-				self._tailBuffer = pref.get() ? BUFFER_IGNORE_LAST_WORKSPACE : BUFFER_SHOW_ALL_WORKSPACES : ;
+				self._tailBuffer = pref.get() ? BUFFER_IGNORE_LAST_WORKSPACE : BUFFER_SHOW_ALL_WORKSPACES ;
+			};
+			pref.changed(update);
+			update(); // set initial value
+		}
+		)();
+
+		// setup scroll-delay pref
+		(function() {
+			var pref = self._prefs.SCROLL_DELAY;
+			var update = function() {
+				self._scroll_delay = pref.get();
 			};
 			pref.changed(update);
 			update(); // set initial value
@@ -49,49 +62,54 @@ Ext.prototype = {
 		this._panelBinding = this._panel.actor.connect('scroll-event', Lang.bind(this, this._onScrollEvent));
 	},
 
-	_activate : function (index) {
-		let metaWorkspace = global.screen.get_workspace_by_index(index);
-		if (metaWorkspace) metaWorkspace.activate(true);
-	},
-
 	_onScrollEvent : function(actor, event) {
 		let source = event.get_source();
-		if (source != actor) {
-			// Actors in the "status" area often have their own scroll events,
-			// so only respond to scroll events on the panel itself
-			// or from the panel's center box.
-			let fromCenter = this._panel._centerBox && this._panel._centerBox.contains && this._panel._centerBox.contains(source);
-			if (!fromCenter) {
-				return false;
+		if (!source instanceof Shell.GenericContainer) {
+			// Actors in the "status" area often have their own scroll events
+			return Clutter.EVENT_PROPAGATE;
+		}
+
+		let motion;
+		switch (event.get_scroll_direction()) {
+		case Clutter.ScrollDirection.UP:
+			motion = Meta.MotionDirection.UP;
+			break;
+		case Clutter.ScrollDirection.DOWN:
+			motion = Meta.MotionDirection.DOWN;
+			break;
+		case Clutter.ScrollDirection.LEFT:
+			motion = Meta.MotionDirection.LEFT;
+			break;
+		case Clutter.ScrollDirection.RIGHT:
+			motion = Meta.MotionDirection.RIGHT;
+			break;
+		default:
+			return Clutter.EVENT_PROPAGATE;
+		}
+		let activeWs = global.screen.get_active_workspace();
+		let ws = activeWs.get_neighbor(motion);
+		if(!ws) return Clutter.EVENT_STOP;
+
+		var currentTime = Date.now();
+		
+		// global.log("scroll time diff = " + (currentTime - this._lastScroll));
+		if (currentTime < this._lastScroll + this._scroll_delay) {
+			if (currentTime < this._lastScroll) {
+				// Clock went backwards. Reset & accept event
+				this._lastScroll = 0;
+			} else {
+				// within wait period - consume this event (but do nothing)
+				// to prevent accidental rapid scrolling
+				return Clutter.EVENT_STOP;
 			}
 		}
 
-		let direction = event.get_scroll_direction();
-		let diff = 0;
-		if (direction == Clutter.ScrollDirection.DOWN) {
-			diff = 1;
-		} else if (direction == Clutter.ScrollDirection.UP) {
-			diff = -1;
-		} else {
-			return false;
+		var tailBuffer = Main.overview.visible ? BUFFER_SHOW_ALL_WORKSPACES : this._tailBuffer;
+		if (ws.index() < global.screen.n_workspaces - tailBuffer) {
+			this._lastScroll = currentTime;
+			Main.wm.actionMoveWorkspace(ws);
 		}
-
-		var currentTime = new Date().getTime();
-		// global.log("scroll time diff = " + (currentTime - this._lastScroll));
-		if (currentTime > this._lastScroll && currentTime < this._lastScroll + WAIT_MS) {
-			// within wait period - consume this event (but do nothing)
-			// to prevent accidental rapid scrolling
-			return true;
-		}
-		this._lastScroll = currentTime;
-
-
-		let newIndex = global.screen.get_active_workspace().index() + diff;
-		if (newIndex < global.screen.n_workspaces - this._tailBuffer) ) {
-			this._activate(newIndex);
-			return true;
-		}
-		return false;
+		return Clutter.EVENT_STOP;
 	},
 }
 

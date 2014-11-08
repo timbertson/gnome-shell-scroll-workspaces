@@ -1,4 +1,4 @@
 #!bash -eu
+gup --always
 cd scroll-workspaces
-gup -u *
 zip -r "$1" *
