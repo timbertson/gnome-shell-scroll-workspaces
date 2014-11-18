@@ -64,9 +64,10 @@ Ext.prototype = {
 
 	_onScrollEvent : function(actor, event) {
 		let source = event.get_source();
-		if (!source instanceof Shell.GenericContainer) {
-			// Actors in the "status" area often have their own scroll events
-			return Clutter.EVENT_PROPAGATE;
+		if (source != actor) {
+			// Actors in the status area often have their own scroll events,
+			let inStatusArea = this._panel._rightBox && this._panel._rightBox.contains && this._panel._rightBox.contains(source);
+			if (inStatusArea) return Clutter.EVENT_PROPAGATE;
 		}
 
 		let motion;
