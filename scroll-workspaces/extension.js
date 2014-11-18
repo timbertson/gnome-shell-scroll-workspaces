@@ -7,9 +7,8 @@ const Settings = Extension.imports.settings;
 const Meta = imports.gi.Meta;
 const Shell = imports.gi.Shell;
 
-var WAIT_MS = 200;
-var BUFFER_SHOW_ALL_WORKSPACES = 0;
-var BUFFER_IGNORE_LAST_WORKSPACE = 1;
+const BUFFER_SHOW_ALL_WORKSPACES = 0;
+const BUFFER_IGNORE_LAST_WORKSPACE = 1;
 
 function Ext() {
 	this._init.apply(this, arguments);
@@ -21,12 +20,12 @@ Ext.prototype = {
 		this._panelBinding = null;
 		this._lastScroll = Date.now();
 
-		var self = this;
+		let self = this;
 		// setup ignore-last-workspace pref
 		this._prefs = new Settings.Prefs();
 		(function() {
-			var pref = self._prefs.IGNORE_LAST_WORKSPACE;
-			var update = function() {
+			let pref = self._prefs.IGNORE_LAST_WORKSPACE;
+			let update = function() {
 				self._tailBuffer = pref.get() ? BUFFER_IGNORE_LAST_WORKSPACE : BUFFER_SHOW_ALL_WORKSPACES ;
 			};
 			pref.changed(update);
@@ -36,8 +35,8 @@ Ext.prototype = {
 
 		// setup scroll-delay pref
 		(function() {
-			var pref = self._prefs.SCROLL_DELAY;
-			var update = function() {
+			let pref = self._prefs.SCROLL_DELAY;
+			let update = function() {
 				self._scroll_delay = pref.get();
 			};
 			pref.changed(update);
@@ -91,7 +90,7 @@ Ext.prototype = {
 		let ws = activeWs.get_neighbor(motion);
 		if(!ws) return Clutter.EVENT_STOP;
 
-		var currentTime = Date.now();
+		let currentTime = Date.now();
 		
 		// global.log("scroll time diff = " + (currentTime - this._lastScroll));
 		if (currentTime < this._lastScroll + this._scroll_delay) {
@@ -105,7 +104,7 @@ Ext.prototype = {
 			}
 		}
 
-		var tailBuffer = Main.overview.visible ? BUFFER_SHOW_ALL_WORKSPACES : this._tailBuffer;
+		let tailBuffer = Main.overview.visible ? BUFFER_SHOW_ALL_WORKSPACES : this._tailBuffer;
 		if (ws.index() < global.screen.n_workspaces - tailBuffer) {
 			this._lastScroll = currentTime;
 			Main.wm.actionMoveWorkspace(ws);

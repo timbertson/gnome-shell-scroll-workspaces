@@ -25,8 +25,8 @@ function get_local_gsettings(schema_path) {
 };
 
 function Prefs() {
-	var self = this;
-	var settings = this.settings = get_local_gsettings(SCHEMA_PATH);
+	let self = this;
+	let settings = this.settings = get_local_gsettings(SCHEMA_PATH);
 	this.IGNORE_LAST_WORKSPACE = {
 		key: 'ignore-last-workspace',
 		get: function() { return settings.get_boolean(this.key); },
