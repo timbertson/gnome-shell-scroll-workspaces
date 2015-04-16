@@ -6,6 +6,7 @@ const Extension = ExtensionUtils.getCurrentExtension();
 const Convenience = Extension.imports.convenience;
 const Meta = imports.gi.Meta;
 const Shell = imports.gi.Shell;
+const WorkspaceSwitcherPopup = imports.ui.workspaceSwitcherPopup;
 
 const BUFFER_SHOW_ALL_WORKSPACES = 0;
 const BUFFER_IGNORE_LAST_WORKSPACE = 1;
@@ -124,10 +125,29 @@ Ext.prototype = {
 			}
 		}
 
-		if (ws.index() < global.screen.n_workspaces - tailBuffer) {
-			this._lastScroll = currentTime;
-			Main.wm.actionMoveWorkspace(ws);
+		if (ws.index() > global.screen.n_workspaces - tailBuffer) {
+			return Clutter.EVENT_STOP
 		}
+
+		// The following code is taken from and thus compatible with the dash-to-dock extension by micheleg
+		// which can be found at https://github.com/micheleg/dash-to-dock/blob/master/dockedDash.js.
+		if (Main.wm._workspaceSwitcherPopup == null)
+			Main.wm._workspaceSwitcherPopup = new WorkspaceSwitcherPopup.WorkspaceSwitcherPopup();
+			// Set the actor non reactive, so that it doesn't prevent the
+			// clicks events from reaching the dash actor. I can't see a reason
+			// why it should be reactive.
+			Main.wm._workspaceSwitcherPopup.actor.reactive = false;
+			Main.wm._workspaceSwitcherPopup.connect('destroy', function() {
+				Main.wm._workspaceSwitcherPopup = null;
+			});
+
+		// Do not show wokspaceSwithcer in overview
+		if(!Main.overview.visible)
+			Main.wm._workspaceSwitcherPopup.display(motion, ws.index());
+		// End of code taken from dash-to-dock.
+
+		Main.wm.actionMoveWorkspace(ws);
+		this._lastScroll = currentTime;
 		return Clutter.EVENT_STOP;
 	},
 }
