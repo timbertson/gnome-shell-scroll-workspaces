@@ -3,7 +3,7 @@ const Lang = imports.lang;
 const Main = imports.ui.main;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Extension = ExtensionUtils.getCurrentExtension();
-const Settings = Extension.imports.settings;
+const Convenience = Extension.imports.convenience;
 const Meta = imports.gi.Meta;
 const Shell = imports.gi.Shell;
 
@@ -22,24 +22,22 @@ Ext.prototype = {
 
 		let self = this;
 		// setup ignore-last-workspace pref
-		this._prefs = new Settings.Prefs();
+		this._settings = Convenience.getSettings('org.gnome.shell.extensions.net.gfxmonk.scroll-workspaces');
 		(function() {
-			let pref = self._prefs.IGNORE_LAST_WORKSPACE;
 			let update = function() {
-				self._tailBuffer = pref.get() ? BUFFER_IGNORE_LAST_WORKSPACE : BUFFER_SHOW_ALL_WORKSPACES ;
+				self._tailBuffer = self._settings.get_boolean('ignore-last-workspace') ? BUFFER_IGNORE_LAST_WORKSPACE : BUFFER_SHOW_ALL_WORKSPACES ;
 			};
-			pref.changed(update);
+			self._settings.connect('changed::ignore-last-workspace', update)
 			update(); // set initial value
 		}
 		)();
 
 		// setup scroll-delay pref
 		(function() {
-			let pref = self._prefs.SCROLL_DELAY;
 			let update = function() {
-				self._scroll_delay = pref.get();
+				self._scroll_delay = self._settings.get_int('scroll-delay');
 			};
-			pref.changed(update);
+			self._settings.connect('changed::scroll-delay', update)
 			update(); // set initial value
 		}
 		)();
