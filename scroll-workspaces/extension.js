@@ -88,6 +88,15 @@ Ext.prototype = {
 		}
 		let activeWs = global.screen.get_active_workspace();
 		let ws = activeWs.get_neighbor(motion);
+		let tailBuffer = Main.overview.visible ? BUFFER_SHOW_ALL_WORKSPACES : this._tailBuffer;
+		if (ws == activeWs || ws.index() == global.screen.n_workspaces - tailBuffer) {
+			// When there is no neighbor, the workspace itself is returned.
+			if (ws.index() == 0) {
+				ws = global.screen.get_workspace_by_index(global.screen.n_workspaces - tailBuffer - 1)
+			} else {
+				ws = global.screen.get_workspace_by_index(0)
+			}
+		}
 		if(!ws) return Clutter.EVENT_STOP;
 
 		let currentTime = Date.now();
@@ -104,7 +113,6 @@ Ext.prototype = {
 			}
 		}
 
-		let tailBuffer = Main.overview.visible ? BUFFER_SHOW_ALL_WORKSPACES : this._tailBuffer;
 		if (ws.index() < global.screen.n_workspaces - tailBuffer) {
 			this._lastScroll = currentTime;
 			Main.wm.actionMoveWorkspace(ws);
