@@ -22,7 +22,7 @@ Ext.prototype = {
 
 		let self = this;
 		// setup ignore-last-workspace pref
-		this._settings = Convenience.getSettings('org.gnome.shell.extensions.net.gfxmonk.scroll-workspaces');
+		this._settings = Convenience.getSettings();
 		(function() {
 			let update = function() {
 				self._tailBuffer = self._settings.get_boolean('ignore-last-workspace') ? BUFFER_IGNORE_LAST_WORKSPACE : BUFFER_SHOW_ALL_WORKSPACES ;

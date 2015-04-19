@@ -7,7 +7,7 @@ function init() {
 }
 
 function buildPrefsWidget() {
-	let settings = Convenience.getSettings('org.gnome.shell.extensions.net.gfxmonk.scroll-workspaces');
+	let settings = Convenience.getSettings();
 	let frame = new Gtk.Box({
 		orientation: Gtk.Orientation.VERTICAL,
 		border_width: 10
