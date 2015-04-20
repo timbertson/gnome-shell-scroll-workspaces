@@ -97,6 +97,31 @@ function buildPrefsWidget() {
 		});
 	})();
 
+	(function() {
+		let hbox = new Gtk.Box({
+			orientation: Gtk.Orientation.HORIZONTAL,
+			spacing: 20
+		});
+
+		let label = new Gtk.Label({
+			label: "Show indicator:",
+			use_markup: false,
+		});
+		let checkbutton = new Gtk.CheckButton();
+
+		hbox.add(label);
+		hbox.pack_end(checkbutton, true, true, 0);
+		frame.add(hbox);
+
+		checkbutton.set_active(settings.get_boolean('indicator'));
+		checkbutton.connect('toggled', function(sw) {
+			var newval = sw.get_active();
+			if (newval != settings.get_boolean('indicator')) {
+				settings.set_boolean('indicator', newval);
+			}
+		});
+	})();
+
 	frame.show_all();
 	return frame;
 }

@@ -17,5 +17,10 @@
 			<summary>Wrap around</summary>
 			<description>When scrolling over the boundaries of available workspaces, continue on the other end</description>
 		</key>
+		<key type="b" name="indicator">
+			<default>false</default>
+			<summary>Show inidcator</summary>
+			<description>Show workspace indicator displaying the current worksace when switching</description>
+		</key>
 	</schema>
 </schemalist>
