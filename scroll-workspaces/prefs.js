@@ -1,13 +1,13 @@
 const Gtk = imports.gi.Gtk;
 
 let Extension = imports.misc.extensionUtils.getCurrentExtension();
-let Settings = Extension.imports.settings;
+let Convenience = Extension.imports.convenience;
 
 function init() {
 }
 
 function buildPrefsWidget() {
-	let config = new Settings.Prefs();
+	let settings = Convenience.getSettings();
 	let frame = new Gtk.Box({
 		orientation: Gtk.Orientation.VERTICAL,
 		border_width: 10
@@ -29,13 +29,11 @@ function buildPrefsWidget() {
 		hbox.pack_end(checkbutton, true, true, 0);
 		frame.add(hbox);
 
-		var pref = config.IGNORE_LAST_WORKSPACE;
-		checkbutton.set_active(pref.get());
+		checkbutton.set_active(settings.get_boolean('ignore-last-workspace'));
 		checkbutton.connect('toggled', function(sw) {
-			var oldval = pref.get();
 			var newval = sw.get_active();
-			if (newval != pref.get()) {
-				pref.set(newval);
+			if (newval != settings.get_boolean('ignore-last-workspace')) {
+				settings.set_boolean('ignore-last-workspace', newval);
 			}
 		});
 	})();
@@ -65,13 +63,11 @@ function buildPrefsWidget() {
 		hbox.pack_end(scale, true, true, 0);
 		frame.add(hbox);
 
-		var pref = config.SCROLL_DELAY;
-		scale.set_value(pref.get());
+		scale.set_value(settings.get_int('scroll-delay'));
 		scale.connect('value-changed', function(sw) {
-			var oldval = pref.get();
 			var newval = sw.get_value();
-			if (newval != pref.get()) {
-				pref.set(newval);
+			if (newval != settings.get_int('scroll-delay')) {
+				settings.set_int('scroll-delay', newval);
 			}
 		});
 	})();
