@@ -96,15 +96,6 @@ Ext.prototype = {
 		}
 		let activeWs = global.screen.get_active_workspace();
 		let ws = activeWs.get_neighbor(motion);
-		let tailBuffer = Main.overview.visible ? BUFFER_SHOW_ALL_WORKSPACES : this._tailBuffer;
-		if (this._wrap && ws == activeWs || ws.index() == global.screen.n_workspaces - tailBuffer) {
-			// When there is no neighbor, the workspace itself is returned.
-			if (ws.index() == 0) {
-				ws = global.screen.get_workspace_by_index(global.screen.n_workspaces - tailBuffer - 1)
-			} else {
-				ws = global.screen.get_workspace_by_index(0)
-			}
-		}
 		if(!ws) return Clutter.EVENT_STOP;
 
 		let currentTime = Date.now();
@@ -118,6 +109,18 @@ Ext.prototype = {
 				// within wait period - consume this event (but do nothing)
 				// to prevent accidental rapid scrolling
 				return Clutter.EVENT_STOP;
+			}
+		}
+
+		let tailBuffer = Main.overview.visible ? BUFFER_SHOW_ALL_WORKSPACES : this._tailBuffer;
+		var wsIndex = ws.index();
+		var numWorkspaces = global.screen.n_workspaces - tailBuffer;
+
+		if (this._wrap && (ws == activeWs || wsIndex >= numWorkspaces)) {
+			if (wsIndex === 0) {
+				ws = global.screen.get_workspace_by_index(numWorkspaces-1)
+			} else {
+				ws = global.screen.get_workspace_by_index(0)
 			}
 		}
 
