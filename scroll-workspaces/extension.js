@@ -3,7 +3,7 @@ const Lang = imports.lang;
 const Main = imports.ui.main;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Extension = ExtensionUtils.getCurrentExtension();
-const Settings = Extension.imports.settings;
+const Convenience = Extension.imports.convenience;
 const Meta = imports.gi.Meta;
 const Shell = imports.gi.Shell;
 
@@ -22,24 +22,32 @@ Ext.prototype = {
 
 		let self = this;
 		// setup ignore-last-workspace pref
-		this._prefs = new Settings.Prefs();
+		this._settings = Convenience.getSettings();
 		(function() {
-			let pref = self._prefs.IGNORE_LAST_WORKSPACE;
 			let update = function() {
-				self._tailBuffer = pref.get() ? BUFFER_IGNORE_LAST_WORKSPACE : BUFFER_SHOW_ALL_WORKSPACES ;
+				self._tailBuffer = self._settings.get_boolean('ignore-last-workspace') ? BUFFER_IGNORE_LAST_WORKSPACE : BUFFER_SHOW_ALL_WORKSPACES ;
 			};
-			pref.changed(update);
+			self._settings.connect('changed::ignore-last-workspace', update)
 			update(); // set initial value
 		}
 		)();
 
 		// setup scroll-delay pref
 		(function() {
-			let pref = self._prefs.SCROLL_DELAY;
 			let update = function() {
-				self._scroll_delay = pref.get();
+				self._scroll_delay = self._settings.get_int('scroll-delay');
 			};
-			pref.changed(update);
+			self._settings.connect('changed::scroll-delay', update)
+			update(); // set initial value
+		}
+		)();
+
+		// setup wrap pref
+		(function() {
+			let update = function() {
+				self._wrap = self._settings.get_boolean('wrap');
+			};
+			self._settings.connect('changed::wrap', update)
 			update(); // set initial value
 		}
 		)();
@@ -88,6 +96,15 @@ Ext.prototype = {
 		}
 		let activeWs = global.screen.get_active_workspace();
 		let ws = activeWs.get_neighbor(motion);
+		let tailBuffer = Main.overview.visible ? BUFFER_SHOW_ALL_WORKSPACES : this._tailBuffer;
+		if (this._wrap && ws == activeWs || ws.index() == global.screen.n_workspaces - tailBuffer) {
+			// When there is no neighbor, the workspace itself is returned.
+			if (ws.index() == 0) {
+				ws = global.screen.get_workspace_by_index(global.screen.n_workspaces - tailBuffer - 1)
+			} else {
+				ws = global.screen.get_workspace_by_index(0)
+			}
+		}
 		if(!ws) return Clutter.EVENT_STOP;
 
 		let currentTime = Date.now();
@@ -104,7 +121,6 @@ Ext.prototype = {
 			}
 		}
 
-		let tailBuffer = Main.overview.visible ? BUFFER_SHOW_ALL_WORKSPACES : this._tailBuffer;
 		if (ws.index() < global.screen.n_workspaces - tailBuffer) {
 			this._lastScroll = currentTime;
 			Main.wm.actionMoveWorkspace(ws);

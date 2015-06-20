@@ -12,5 +12,10 @@
 			<summary>Ignore the last workspace</summary>
 			<description>Prevent scrolling into the last workspace</description>
 		</key>
+		<key type="b" name="wrap">
+			<default>false</default>
+			<summary>Wrap around</summary>
+			<description>When scrolling over the boundaries of available workspaces, continue on the other end</description>
+		</key>
 	</schema>
 </schemalist>
