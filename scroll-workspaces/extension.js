@@ -135,7 +135,7 @@ Ext.prototype = {
 			}
 		}
 
-		if (ws.index() > global.screen.n_workspaces - tailBuffer) {
+		if (ws.index() >= global.screen.n_workspaces - tailBuffer) {
 			return Clutter.EVENT_STOP
 		}
 
