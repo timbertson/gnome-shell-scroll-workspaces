@@ -2,7 +2,7 @@
     "uuid": "scroll-workspaces@gfxmonk.net",
     "name": "Top Panel Workspace Scroll",
     "description": "Change workspaces by scrolling over the top panel",
-    "shell-version": [ "3.10", "3.12", "3.14", "3.16" ],
+    "shell-version": [ "3.10", "3.12", "3.14", "3.16", "3.18" ],
     "original-authors": [ "tim@gfxmonk.net" ],
     "url": "https://github.com/gfxmonk/gnome-shell-scroll-workspaces",
     "settings-schema": "org.gnome.shell.extensions.net.gfxmonk.scroll-workspaces"
