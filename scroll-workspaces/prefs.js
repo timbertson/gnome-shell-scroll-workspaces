@@ -3,7 +3,11 @@ const Gtk = imports.gi.Gtk;
 let Extension = imports.misc.extensionUtils.getCurrentExtension();
 let Convenience = Extension.imports.convenience;
 
+const Gettext = imports.gettext.domain('scroll-workspaces');
+const _ = Gettext.gettext;
+
 function init() {
+	Convenience.initTranslations("scroll-workspaces");
 }
 
 function buildPrefsWidget() {
@@ -22,7 +26,7 @@ function buildPrefsWidget() {
 		});
 
 		let label = new Gtk.Label({
-			label: "Ignore last workspace:",
+			label: _("Ignore last workspace:"),
 			use_markup: false,
 			xalign: 0
 		});
@@ -48,7 +52,7 @@ function buildPrefsWidget() {
 		});
 
 		let label = new Gtk.Label({
-			label: "Minimum delay between scroll events (ms)\n<small>(prevents accidental double-scrolling)</small>",
+			label: _("Minimum delay between scroll events (ms)")+"\n<small>("+_("prevents accidental double-scrolling")+")</small>",
 			use_markup: true,
 			xalign: 0
 		});
@@ -84,7 +88,7 @@ function buildPrefsWidget() {
 		});
 
 		let label = new Gtk.Label({
-			label: "Wrap around:",
+			label: _("Wrap around:"),
 			use_markup: false,
 			xalign: 0
 		});
@@ -110,7 +114,7 @@ function buildPrefsWidget() {
 		});
 
 		let label = new Gtk.Label({
-			label: "Show indicator:",
+			label: _("Show indicator:"),
 			use_markup: false,
 			xalign: 0
 		});

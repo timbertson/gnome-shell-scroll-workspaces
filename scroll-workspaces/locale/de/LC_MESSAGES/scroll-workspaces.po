@@ -1,0 +1,39 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Scroll Workspaces GNOME Shell Extension\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-08-08 21:18+0200\n"
+"PO-Revision-Date: 2016-08-08 21:21+0200\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Last-Translator: Jonatan Hatakeyama Zeidler <jonatan_zeidler@gmx.de>\n"
+"Language-Team: jonius <jonatan_zeidler@gmx.de>\n"
+"X-Generator: Poedit 1.8.7.1\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+#: prefs.js:29
+msgid "Ignore last workspace:"
+msgstr "Letzte Arbeitsfläche ignorieren"
+
+#: prefs.js:55
+msgid "Minimum delay between scroll events (ms)"
+msgstr "Mindestverzögerung zwischen Scroll-Ereignissen (ms)"
+
+#: prefs.js:55
+msgid "prevents accidental double-scrolling"
+msgstr "verhindert versehentliches Doppel-Scrollen"
+
+#: prefs.js:91
+msgid "Wrap around:"
+msgstr "Von der letzten Arbeitsfläche zur ersten springen"
+
+#: prefs.js:117
+msgid "Show indicator:"
+msgstr "Arbeitsflächenindikator beim Wechsel anzeigen"
