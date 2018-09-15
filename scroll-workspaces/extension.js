@@ -20,6 +20,7 @@ Ext.prototype = {
 		this._panel = Main.panel;
 		this._panelBinding = null;
 		this._lastScroll = Date.now();
+		this._workspaceManager = global.workspace_manager;
 
 		let self = this;
 		// setup ignore-last-workspace pref
@@ -105,7 +106,7 @@ Ext.prototype = {
 		default:
 			return Clutter.EVENT_PROPAGATE;
 		}
-		let activeWs = global.screen.get_active_workspace();
+		let activeWs = self._workspaceManager.get_active_workspace();
 		let ws = activeWs.get_neighbor(motion);
 		if(!ws) return Clutter.EVENT_STOP;
 
@@ -125,17 +126,17 @@ Ext.prototype = {
 
 		let tailBuffer = Main.overview.visible ? BUFFER_SHOW_ALL_WORKSPACES : this._tailBuffer;
 		var wsIndex = ws.index();
-		var numWorkspaces = global.screen.n_workspaces - tailBuffer;
+		var numWorkspaces = self._workspaceManager.n_workspaces - tailBuffer;
 
 		if (this._wrap && (ws == activeWs || wsIndex >= numWorkspaces)) {
 			if (wsIndex === 0) {
-				ws = global.screen.get_workspace_by_index(numWorkspaces-1)
+				ws = self._workspaceManager.get_workspace_by_index(numWorkspaces-1)
 			} else {
-				ws = global.screen.get_workspace_by_index(0)
+				ws = self._workspaceManager.get_workspace_by_index(0)
 			}
 		}
 
-		if (ws.index() >= global.screen.n_workspaces - tailBuffer) {
+		if (ws.index() >= self._workspaceManager.n_workspaces - tailBuffer) {
 			return Clutter.EVENT_STOP
 		}
 
