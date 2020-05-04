@@ -67,7 +67,7 @@ Ext.prototype = {
 
 	disable: function() {
 		if (this._panelBinding) {
-			this._panel.actor.disconnect(this._panelBinding);
+			this._panel.disconnect(this._panelBinding);
 			this._panelBinding = null;
 		}
 	},
@@ -78,7 +78,7 @@ Ext.prototype = {
 			// enabled twice in a row? should be impossible
 			this.disable();
 		}
-		this._panelBinding = this._panel.actor.connect('scroll-event', Lang.bind(this, this._onScrollEvent));
+		this._panelBinding = this._panel.connect('scroll-event', Lang.bind(this, this._onScrollEvent));
 	},
 
 	_onScrollEvent : function(actor, event) {
@@ -148,7 +148,7 @@ Ext.prototype = {
 				// Set the actor non reactive, so that it doesn't prevent the
 				// clicks events from reaching the dash actor. I can't see a reason
 				// why it should be reactive.
-				Main.wm._workspaceSwitcherPopup.actor.reactive = false;
+				Main.wm._workspaceSwitcherPopup.reactive = false;
 				Main.wm._workspaceSwitcherPopup.connect('destroy', function() {
 					Main.wm._workspaceSwitcherPopup = null;
 				});
