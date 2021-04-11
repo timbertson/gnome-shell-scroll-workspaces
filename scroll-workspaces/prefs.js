@@ -14,8 +14,10 @@ function buildPrefsWidget() {
 	let settings = Convenience.getSettings();
 	let frame = new Gtk.Box({
 		orientation: Gtk.Orientation.VERTICAL,
-		border_width: 10,
-		margin: 20,
+		margin_top: 30,
+		margin_bottom: 30,
+		margin_start: 30,
+		margin_end: 30,
 		spacing: 5
 	});
 
@@ -28,13 +30,14 @@ function buildPrefsWidget() {
 		let label = new Gtk.Label({
 			label: _("Ignore last workspace:"),
 			use_markup: false,
-			xalign: 0
+			xalign: 0,
+			hexpand: true
 		});
 		let checkbutton = new Gtk.CheckButton();
 
-		hbox.pack_start(label, true, true, 0);
-		hbox.add(checkbutton);
-		frame.add(hbox);
+		hbox.append(label, true, true, 0);
+		hbox.append(checkbutton);
+		frame.append(hbox);
 
 		checkbutton.set_active(settings.get_boolean('ignore-last-workspace'));
 		checkbutton.connect('toggled', function(sw) {
@@ -54,22 +57,25 @@ function buildPrefsWidget() {
 		let label = new Gtk.Label({
 			label: _("Minimum delay between scroll events (ms)")+"\n<small>("+_("prevents accidental double-scrolling")+")</small>",
 			use_markup: true,
-			xalign: 0
+			xalign: 0,
+			hexpand: true
 		});
 		let adjustment = new Gtk.Adjustment({
 			lower: 0,
 			upper: 500,
 			step_increment: 10
 		});
-		let scale = new Gtk.HScale({
+		let scale = new Gtk.Scale({
+			orientation: Gtk.Orientation.HORIZONTAL,
 			digits:0,
 			adjustment: adjustment,
-			value_pos: Gtk.PositionType.RIGHT
+			value_pos: Gtk.PositionType.RIGHT,
+			draw_value: true
 		});
 
-		hbox.add(label);
-		hbox.pack_end(scale, true, true, 0);
-		frame.add(hbox);
+		hbox.append(label);
+		hbox.append(scale, true, true, 0);
+		frame.append(hbox);
 
 		scale.set_value(settings.get_int('scroll-delay'));
 		scale.set_size_request(200, -1);
@@ -90,13 +96,14 @@ function buildPrefsWidget() {
 		let label = new Gtk.Label({
 			label: _("Wrap around:"),
 			use_markup: false,
-			xalign: 0
+			xalign: 0,
+			hexpand: true
 		});
 		let checkbutton = new Gtk.CheckButton();
 
-		hbox.pack_start(label, true, true, 0);
-		hbox.add(checkbutton);
-		frame.add(hbox);
+		hbox.append(label, true, true, 0);
+		hbox.append(checkbutton);
+		frame.append(hbox);
 
 		checkbutton.set_active(settings.get_boolean('wrap'));
 		checkbutton.connect('toggled', function(sw) {
@@ -116,13 +123,14 @@ function buildPrefsWidget() {
 		let label = new Gtk.Label({
 			label: _("Show indicator:"),
 			use_markup: false,
-			xalign: 0
+			xalign: 0,
+			hexpand: true
 		});
 		let checkbutton = new Gtk.CheckButton();
 
-		hbox.pack_start(label, true, true, 0);
-		hbox.add(checkbutton);
-		frame.add(hbox);
+		hbox.append(label, true, true, 0);
+		hbox.append(checkbutton);
+		frame.append(hbox);
 
 		checkbutton.set_active(settings.get_boolean('indicator'));
 		checkbutton.connect('toggled', function(sw) {
@@ -133,6 +141,5 @@ function buildPrefsWidget() {
 		});
 	})();
 
-	frame.show_all();
 	return frame;
 }
