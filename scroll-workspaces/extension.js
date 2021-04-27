@@ -92,10 +92,12 @@ Ext.prototype = {
 		let motion;
 		switch (event.get_scroll_direction()) {
 		case Clutter.ScrollDirection.UP:
-			motion = Meta.MotionDirection.LEFT;
+			motion = (global.workspace_manager.layout_rows == 1) ?
+				Meta.MotionDirection.LEFT : Meta.MotionDirection.UP;
 			break;
 		case Clutter.ScrollDirection.DOWN:
-			motion = Meta.MotionDirection.RIGHT;
+			motion = (global.workspace_manager.layout_rows == 1) ?
+				Meta.MotionDirection.RIGHT : Meta.MotionDirection.DOWN;
 			break;
 		case Clutter.ScrollDirection.LEFT:
 			motion = Meta.MotionDirection.LEFT;
