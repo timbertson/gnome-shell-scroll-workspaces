@@ -90,14 +90,26 @@ Ext.prototype = {
 		}
 
 		let motion;
-		switch (event.get_scroll_direction()) {
+		let scroll_direction = event.get_scroll_direction();
+
+		// If layout is horizontal, treat up/down as left/right
+		if (this._workspaceManager.layout_rows === 1) {
+			switch (scroll_direction) {
+			case Clutter.ScrollDirection.UP:
+				scroll_direction = Clutter.ScrollDirection.LEFT;
+				break;
+			case Clutter.ScrollDirection.DOWN:
+				scroll_direction = Clutter.ScrollDirection.RIGHT;
+				break;
+			}
+		}
+
+		switch (scroll_direction) {
 		case Clutter.ScrollDirection.UP:
-			motion = (global.workspace_manager.layout_rows == 1) ?
-				Meta.MotionDirection.LEFT : Meta.MotionDirection.UP;
+			motion = Meta.MotionDirection.UP;
 			break;
 		case Clutter.ScrollDirection.DOWN:
-			motion = (global.workspace_manager.layout_rows == 1) ?
-				Meta.MotionDirection.RIGHT : Meta.MotionDirection.DOWN;
+			motion = Meta.MotionDirection.DOWN;
 			break;
 		case Clutter.ScrollDirection.LEFT:
 			motion = Meta.MotionDirection.LEFT;
