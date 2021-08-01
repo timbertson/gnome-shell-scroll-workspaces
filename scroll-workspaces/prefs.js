@@ -18,29 +18,29 @@ function buildPrefsWidget() {
 		margin_bottom: 30,
 		margin_start: 30,
 		margin_end: 30,
-		spacing: 5
+		spacing: 20
 	});
 
 	(function() {
 		let hbox = new Gtk.Box({
 			orientation: Gtk.Orientation.HORIZONTAL,
-			spacing: 50
+			spacing: 30
 		});
 
 		let label = new Gtk.Label({
-			label: _("Ignore last workspace:"),
+			label: _("Ignore last workspace"),
 			use_markup: false,
 			xalign: 0,
 			hexpand: true
 		});
-		let checkbutton = new Gtk.CheckButton();
+		let toggle = new Gtk.Switch();
 
-		hbox.append(label, true, true, 0);
-		hbox.append(checkbutton);
+		hbox.append(label);
+		hbox.append(toggle);
 		frame.append(hbox);
 
-		checkbutton.set_active(settings.get_boolean('ignore-last-workspace'));
-		checkbutton.connect('toggled', function(sw) {
+		toggle.set_active(settings.get_boolean('ignore-last-workspace'));
+		toggle.connect('state-set', function(sw) {
 			var newval = sw.get_active();
 			if (newval != settings.get_boolean('ignore-last-workspace')) {
 				settings.set_boolean('ignore-last-workspace', newval);
@@ -51,62 +51,23 @@ function buildPrefsWidget() {
 	(function() {
 		let hbox = new Gtk.Box({
 			orientation: Gtk.Orientation.HORIZONTAL,
-			spacing: 50
+			spacing: 30
 		});
 
 		let label = new Gtk.Label({
-			label: _("Minimum delay between scroll events (ms)")+"\n<small>("+_("prevents accidental double-scrolling")+")</small>",
-			use_markup: true,
-			xalign: 0,
-			hexpand: true
-		});
-		let adjustment = new Gtk.Adjustment({
-			lower: 0,
-			upper: 500,
-			step_increment: 10
-		});
-		let scale = new Gtk.Scale({
-			orientation: Gtk.Orientation.HORIZONTAL,
-			digits:0,
-			adjustment: adjustment,
-			value_pos: Gtk.PositionType.RIGHT,
-			draw_value: true
-		});
-
-		hbox.append(label);
-		hbox.append(scale, true, true, 0);
-		frame.append(hbox);
-
-		scale.set_value(settings.get_int('scroll-delay'));
-		scale.set_size_request(200, -1);
-		scale.connect('value-changed', function(sw) {
-			var newval = sw.get_value();
-			if (newval != settings.get_int('scroll-delay')) {
-				settings.set_int('scroll-delay', newval);
-			}
-		});
-	})();
-
-	(function() {
-		let hbox = new Gtk.Box({
-			orientation: Gtk.Orientation.HORIZONTAL,
-			spacing: 50
-		});
-
-		let label = new Gtk.Label({
-			label: _("Wrap around:"),
+			label: _("Wrap around"),
 			use_markup: false,
 			xalign: 0,
 			hexpand: true
 		});
-		let checkbutton = new Gtk.CheckButton();
+		let toggle = new Gtk.Switch();
 
-		hbox.append(label, true, true, 0);
-		hbox.append(checkbutton);
+		hbox.append(label);
+		hbox.append(toggle);
 		frame.append(hbox);
 
-		checkbutton.set_active(settings.get_boolean('wrap'));
-		checkbutton.connect('toggled', function(sw) {
+		toggle.set_active(settings.get_boolean('wrap'));
+		toggle.connect('state-set', function(sw) {
 			var newval = sw.get_active();
 			if (newval != settings.get_boolean('wrap')) {
 				settings.set_boolean('wrap', newval);
@@ -117,26 +78,74 @@ function buildPrefsWidget() {
 	(function() {
 		let hbox = new Gtk.Box({
 			orientation: Gtk.Orientation.HORIZONTAL,
-			spacing: 50
+			spacing: 30
 		});
 
 		let label = new Gtk.Label({
-			label: _("Show indicator:"),
+			label: _("Show indicator"),
 			use_markup: false,
 			xalign: 0,
 			hexpand: true
 		});
-		let checkbutton = new Gtk.CheckButton();
+		let toggle = new Gtk.Switch();
 
-		hbox.append(label, true, true, 0);
-		hbox.append(checkbutton);
+		hbox.append(label);
+		hbox.append(toggle);
 		frame.append(hbox);
 
-		checkbutton.set_active(settings.get_boolean('indicator'));
-		checkbutton.connect('toggled', function(sw) {
+		toggle.set_active(settings.get_boolean('indicator'));
+		toggle.connect('state-set', function(sw) {
 			var newval = sw.get_active();
 			if (newval != settings.get_boolean('indicator')) {
 				settings.set_boolean('indicator', newval);
+			}
+		});
+	})();
+
+	(function() {
+		let hbox = new Gtk.Box({
+			orientation: Gtk.Orientation.HORIZONTAL,
+			spacing: 30
+		});
+
+		let labelbox = new Gtk.Box({
+			orientation: Gtk.Orientation.VERTICAL
+		});
+		let label = new Gtk.Label({
+			label: _("Minimum delay between scroll events (ms)"),
+			use_markup: false,
+			xalign: 0,
+			hexpand: true
+		});
+		let dimlabel = new Gtk.Label({
+			label: _("Prevents accidental double-scrolling"),
+			use_markup: false,
+			xalign: 0,
+			hexpand: true,
+			css_classes: ["dim-label"]
+		});
+		labelbox.append(label);
+		labelbox.append(dimlabel);
+
+		let adjustment = new Gtk.Adjustment({
+			lower: 0,
+			upper: 500,
+			step_increment: 10
+		});
+		
+		let spinbutton = new Gtk.SpinButton({
+			adjustment: adjustment
+		});
+
+		hbox.append(labelbox);
+		hbox.append(spinbutton);
+		frame.append(hbox);
+
+		spinbutton.set_value(settings.get_int('scroll-delay'));
+		spinbutton.connect('value-changed', function(sw) {
+			var newval = sw.get_value();
+			if (newval != settings.get_int('scroll-delay')) {
+				settings.set_int('scroll-delay', newval);
 			}
 		});
 	})();
