@@ -3,7 +3,6 @@ const Lang = imports.lang;
 const Main = imports.ui.main;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Extension = ExtensionUtils.getCurrentExtension();
-const Convenience = Extension.imports.convenience;
 const Meta = imports.gi.Meta;
 const Shell = imports.gi.Shell;
 const WorkspaceSwitcherPopup = imports.ui.workspaceSwitcherPopup;
@@ -17,68 +16,66 @@ function Ext() {
 
 Ext.prototype = {
 	_init: function(){
-		this._panel = Main.panel;
+		log('[System monitor] scroll-workspace init()');
+        this._panel = Main.panel;
 		this._panelBinding = null;
 		this._lastScroll = Date.now();
-		this._workspaceManager = global.workspace_manager;
+		
+	},
+
+
+	enable: function() {
+    	log('[System monitor] scroll-workspace enable()');
 
 		let self = this;
 		// setup ignore-last-workspace pref
-		this._settings = Convenience.getSettings();
-		(function() {
-			let update = function() {
-				self._tailBuffer = self._settings.get_boolean('ignore-last-workspace') ? BUFFER_IGNORE_LAST_WORKSPACE : BUFFER_SHOW_ALL_WORKSPACES ;
-			};
-			self._settings.connect('changed::ignore-last-workspace', update)
-			update(); // set initial value
-		}
-		)();
+		this._settings = ExtensionUtils.getSettings();
+        
 
-		// setup scroll-delay pref
-		(function() {
-			let update = function() {
-				self._scroll_delay = self._settings.get_int('scroll-delay');
-			};
-			self._settings.connect('changed::scroll-delay', update)
-			update(); // set initial value
-		}
-		)();
+		let update_ignore_last_workspace = function() {
+			self._tailBuffer = self._settings.get_boolean('ignore-last-workspace') ? BUFFER_IGNORE_LAST_WORKSPACE : BUFFER_SHOW_ALL_WORKSPACES ;
+		};
+		self._settings.connect('changed::ignore-last-workspace', update_ignore_last_workspace)
+		update_ignore_last_workspace(); // set initial value
+		
+		// setup scroll-delay pref 
+		let update_scroll_delay = function() {
+			self._scroll_delay = self._settings.get_int('scroll-delay');
+		};
+		self._settings.connect('changed::scroll-delay', update_scroll_delay)
+		update_scroll_delay(); // set initial value
 
 		// setup wrap pref
-		(function() {
-			let update = function() {
-				self._wrap = self._settings.get_boolean('wrap');
-			};
-			self._settings.connect('changed::wrap', update)
-			update(); // set initial value
-		}
-		)();
+		let update_wrap = function() {
+			self._wrap = self._settings.get_boolean('wrap');
+		};
+		self._settings.connect('changed::wrap', update_wrap)
+		update_wrap(); // set initial value
 
 		// setup indicator pref
-		(function() {
-			let update = function() {
-				self._indicator = self._settings.get_boolean('indicator');
-			};
-			self._settings.connect('changed::indicator', update)
-			update(); // set initial value
-		}
-		)();
-	},
+		let update_indicator = function() {
+			self._indicator = self._settings.get_boolean('indicator');
+		};
+		self._settings.connect('changed::indicator', update_indicator)
+		update_indicator(); // set initial value
 
-	disable: function() {
-		if (this._panelBinding) {
-			this._panel.disconnect(this._panelBinding);
-			this._panelBinding = null;
-		}
-	},
 
-	enable: function() {
-		this._panel.reactive = true;
+    	this._panel.reactive = true;
 		if (this._panelBinding) {
 			// enabled twice in a row? should be impossible
 			this.disable();
 		}
-		this._panelBinding = this._panel.connect('scroll-event', Lang.bind(this, this._onScrollEvent));
+		//this._panelBinding = this._panel.connect('scroll-event', Lang.bind(this, this._onScrollEvent));
+		this._panelBinding = this._panel.connect('scroll-event', this._onScrollEvent);
+	},
+
+
+	disable: function() {
+    	log('[System monitor] scroll-workspace disable()');
+		if (this._panelBinding) {
+			this._panel.disconnect(this._panelBinding);
+			this._panelBinding = null;
+		}
 	},
 
 	_onScrollEvent : function(actor, event) {
@@ -93,7 +90,7 @@ Ext.prototype = {
 		let scroll_direction = event.get_scroll_direction();
 
 		// If layout is horizontal, treat up/down as left/right
-		if (this._workspaceManager.layout_rows === 1) {
+		if (global.workspaceManager.layout_rows === 1) {
 			switch (scroll_direction) {
 			case Clutter.ScrollDirection.UP:
 				scroll_direction = Clutter.ScrollDirection.LEFT;
@@ -120,7 +117,7 @@ Ext.prototype = {
 		default:
 			return Clutter.EVENT_PROPAGATE;
 		}
-		let activeWs = this._workspaceManager.get_active_workspace();
+		let activeWs = global.workspaceManager.get_active_workspace();
 		let ws = activeWs.get_neighbor(motion);
 		if(!ws) return Clutter.EVENT_STOP;
 
@@ -140,17 +137,17 @@ Ext.prototype = {
 
 		let tailBuffer = Main.overview.visible ? BUFFER_SHOW_ALL_WORKSPACES : this._tailBuffer;
 		var wsIndex = ws.index();
-		var numWorkspaces = this._workspaceManager.n_workspaces - tailBuffer;
+		var numWorkspaces = global.workspaceManager.n_workspaces - tailBuffer;
 
 		if (this._wrap && (ws == activeWs || wsIndex >= numWorkspaces)) {
 			if (wsIndex === 0) {
-				ws = this._workspaceManager.get_workspace_by_index(numWorkspaces-1)
+				ws = global.workspaceManager.get_workspace_by_index(numWorkspaces-1)
 			} else {
-				ws = this._workspaceManager.get_workspace_by_index(0)
+				ws = global.workspaceManager.get_workspace_by_index(0)
 			}
 		}
 
-		if (ws.index() >= this._workspaceManager.n_workspaces - tailBuffer) {
+		if (ws.index() >= global.workspaceManager.n_workspaces - tailBuffer) {
 			return Clutter.EVENT_STOP
 		}
 
@@ -180,10 +177,7 @@ Ext.prototype = {
 }
 
 function init(meta) {
+    log('[System monitor] scroll-workspace outer init()');
 	let ext = new Ext();
 	return ext;
 }
-
-function main() {
-	init().enable();
-};

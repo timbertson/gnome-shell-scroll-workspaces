@@ -2,4 +2,4 @@
 gup --always
 cd scroll-workspaces
 gup --clean -f --metadata
-zip -r "$1" *
+zip -r "$1" * --exclude *.pot

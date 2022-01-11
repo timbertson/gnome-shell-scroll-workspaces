@@ -1,17 +1,17 @@
 const Gtk = imports.gi.Gtk;
 
 let Extension = imports.misc.extensionUtils.getCurrentExtension();
-let Convenience = Extension.imports.convenience;
+const ExtensionUtils = imports.misc.extensionUtils;
 
 const Gettext = imports.gettext.domain('scroll-workspaces');
 const _ = Gettext.gettext;
 
 function init() {
-	Convenience.initTranslations("scroll-workspaces");
+	ExtensionUtils.initTranslations("scroll-workspaces");
 }
 
 function buildPrefsWidget() {
-	let settings = Convenience.getSettings();
+	let settings = ExtensionUtils.getSettings();
 	let frame = new Gtk.Box({
 		orientation: Gtk.Orientation.VERTICAL,
 		margin_top: 30,
