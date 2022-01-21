@@ -17,7 +17,7 @@ function Ext() {
 Ext.prototype = {
 	_init: function(){
 		log('[System monitor] scroll-workspace init()');
-        this._panel = Main.panel;
+		this._panel = Main.panel;
 		this._panelBinding = null;
 		this._lastScroll = Date.now();
 		
@@ -25,12 +25,11 @@ Ext.prototype = {
 
 
 	enable: function() {
-    	log('[System monitor] scroll-workspace enable()');
+		log('[System monitor] scroll-workspace enable()');
 
 		let self = this;
 		// setup ignore-last-workspace pref
 		this._settings = ExtensionUtils.getSettings();
-        
 
 		let update_ignore_last_workspace = function() {
 			self._tailBuffer = self._settings.get_boolean('ignore-last-workspace') ? BUFFER_IGNORE_LAST_WORKSPACE : BUFFER_SHOW_ALL_WORKSPACES ;
@@ -60,7 +59,7 @@ Ext.prototype = {
 		update_indicator(); // set initial value
 
 
-    	this._panel.reactive = true;
+		this._panel.reactive = true;
 		if (this._panelBinding) {
 			// enabled twice in a row? should be impossible
 			this.disable();
@@ -71,7 +70,7 @@ Ext.prototype = {
 
 
 	disable: function() {
-    	log('[System monitor] scroll-workspace disable()');
+		log('[System monitor] scroll-workspace disable()');
 		if (this._panelBinding) {
 			this._panel.disconnect(this._panelBinding);
 			this._panelBinding = null;
@@ -177,7 +176,7 @@ Ext.prototype = {
 }
 
 function init(meta) {
-    log('[System monitor] scroll-workspace outer init()');
+	log('[System monitor] scroll-workspace outer init()');
 	let ext = new Ext();
 	return ext;
 }
