@@ -1,5 +1,4 @@
 const Clutter = imports.gi.Clutter;
-const Lang = imports.lang;
 const Main = imports.ui.main;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Extension = ExtensionUtils.getCurrentExtension();
@@ -64,7 +63,6 @@ Ext.prototype = {
 			// enabled twice in a row? should be impossible
 			this.disable();
 		}
-		//this._panelBinding = this._panel.connect('scroll-event', Lang.bind(this, this._onScrollEvent));
 		this._panelBinding = this._panel.connect('scroll-event', this._onScrollEvent);
 	},
 
