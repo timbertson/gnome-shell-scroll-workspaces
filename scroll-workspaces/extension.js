@@ -27,8 +27,9 @@ Ext.prototype = {
 		log('[System monitor] scroll-workspace enable()');
 
 		let self = this;
+
 		// setup ignore-last-workspace pref
-		this._settings = ExtensionUtils.getSettings();
+		self._settings = ExtensionUtils.getSettings();
 
 		let update_ignore_last_workspace = function() {
 			self._tailBuffer = self._settings.get_boolean('ignore-last-workspace') ? BUFFER_IGNORE_LAST_WORKSPACE : BUFFER_SHOW_ALL_WORKSPACES ;
@@ -36,9 +37,10 @@ Ext.prototype = {
 		self._settings.connect('changed::ignore-last-workspace', update_ignore_last_workspace)
 		update_ignore_last_workspace(); // set initial value
 		
-		// setup scroll-delay pref 
+		// setup scroll-delay pref
 		let update_scroll_delay = function() {
 			self._scroll_delay = self._settings.get_int('scroll-delay');
+			log('scroll-workspaces scroll delay: ' + self._scroll_delay);
 		};
 		self._settings.connect('changed::scroll-delay', update_scroll_delay)
 		update_scroll_delay(); // set initial value
@@ -46,6 +48,7 @@ Ext.prototype = {
 		// setup wrap pref
 		let update_wrap = function() {
 			self._wrap = self._settings.get_boolean('wrap');
+			log('scroll-workspaces wrap: ' + self._wrap);
 		};
 		self._settings.connect('changed::wrap', update_wrap)
 		update_wrap(); // set initial value
@@ -53,17 +56,18 @@ Ext.prototype = {
 		// setup indicator pref
 		let update_indicator = function() {
 			self._indicator = self._settings.get_boolean('indicator');
+			log('scroll-workspaces indicator enabled: ' + self._indicator);
 		};
 		self._settings.connect('changed::indicator', update_indicator)
 		update_indicator(); // set initial value
 
 
-		this._panel.reactive = true;
-		if (this._panelBinding) {
+		self._panel.reactive = true;
+		if (self._panelBinding) {
 			// enabled twice in a row? should be impossible
-			this.disable();
+			self.disable();
 		}
-		this._panelBinding = this._panel.connect('scroll-event', this._onScrollEvent);
+		self._panelBinding = self._panel.connect('scroll-event', self._onScrollEvent.bind(self));
 	},
 
 
