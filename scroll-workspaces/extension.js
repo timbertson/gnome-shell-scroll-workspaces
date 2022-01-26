@@ -40,7 +40,7 @@ Ext.prototype = {
 		// setup scroll-delay pref
 		let update_scroll_delay = function() {
 			self._scroll_delay = self._settings.get_int('scroll-delay');
-			log('scroll-workspaces scroll delay: ' + self._scroll_delay);
+			// log('scroll-workspaces scroll delay: ' + self._scroll_delay);
 		};
 		self._settings.connect('changed::scroll-delay', update_scroll_delay)
 		update_scroll_delay(); // set initial value
@@ -48,7 +48,7 @@ Ext.prototype = {
 		// setup wrap pref
 		let update_wrap = function() {
 			self._wrap = self._settings.get_boolean('wrap');
-			log('scroll-workspaces wrap: ' + self._wrap);
+			// log('scroll-workspaces wrap: ' + self._wrap);
 		};
 		self._settings.connect('changed::wrap', update_wrap)
 		update_wrap(); // set initial value
@@ -56,7 +56,7 @@ Ext.prototype = {
 		// setup indicator pref
 		let update_indicator = function() {
 			self._indicator = self._settings.get_boolean('indicator');
-			log('scroll-workspaces indicator enabled: ' + self._indicator);
+			// log('scroll-workspaces indicator enabled: ' + self._indicator);
 		};
 		self._settings.connect('changed::indicator', update_indicator)
 		update_indicator(); // set initial value
