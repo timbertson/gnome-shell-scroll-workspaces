@@ -1,0 +1,7 @@
+#!bash -eux
+gup --always
+find scroll-workspaces -iname '*.po' > "$1"
+cat "$1" | sort | while read f; do
+	echo "$f"
+	cat "$f"
+done | gup --contents

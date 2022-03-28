@@ -1,0 +1,19 @@
+#: prefs.js:29
+msgid "Ignore last workspace:"
+msgstr "Игнорировать последний рабочий стол"
+
+#: prefs.js:55
+msgid "Minimum delay between scroll events (ms)"
+msgstr "Минимальная задержка между событием переключения (мс)"
+
+#: prefs.js:55
+msgid "prevents accidental double-scrolling"
+msgstr "Предотвращать двойное переключение"
+
+#: prefs.js:91
+msgid "Wrap around:"
+msgstr "Закольцовать переключение"
+
+#: prefs.js:117
+msgid "Show indicator:"
+msgstr "Показывать индикатор"

@@ -1,0 +1,8 @@
+#!bash -eux
+gup -u locale.inputs
+cat locale.inputs | while read input; do
+	output="${input/.po/.mo}"
+	echo "Compiling $input -> $output"
+	gup -u "$input"
+	msgfmt -f "$input" -o "$output"
+done
