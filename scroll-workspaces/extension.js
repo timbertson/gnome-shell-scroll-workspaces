@@ -166,8 +166,14 @@ Ext.prototype = {
 				});
 
 			// Do not show wokspaceSwithcer in overview
-			if(!Main.overview.visible)
-				Main.wm._workspaceSwitcherPopup.display(motion, ws.index());
+			if(!Main.overview.visible) {
+				// Fix for Gnome 43+
+				if(imports.misc.config.PACKAGE_VERSION >= '42') {
+					Main.wm._workspaceSwitcherPopup.display(ws.index());
+				} else {
+					Main.wm._workspaceSwitcherPopup.display(motion, ws.index());
+				}
+			}
 			// End of code taken from dash-to-dock.
 		}
 
