@@ -168,7 +168,7 @@ Ext.prototype = {
 			// Do not show wokspaceSwithcer in overview
 			if(!Main.overview.visible) {
 				// Fix for Gnome 43+
-				if(imports.misc.config.PACKAGE_VERSION >= '42') {
+				if(parseInt(imports.misc.config.PACKAGE_VERSION) >= 42) {
 					Main.wm._workspaceSwitcherPopup.display(ws.index());
 				} else {
 					Main.wm._workspaceSwitcherPopup.display(motion, ws.index());
