@@ -167,7 +167,7 @@ Ext.prototype = {
 
 			// Do not show wokspaceSwithcer in overview
 			if(!Main.overview.visible)
-				Main.wm._workspaceSwitcherPopup.display(motion, ws.index());
+				Main.wm._workspaceSwitcherPopup.display(ws.index());
 			// End of code taken from dash-to-dock.
 		}
 
