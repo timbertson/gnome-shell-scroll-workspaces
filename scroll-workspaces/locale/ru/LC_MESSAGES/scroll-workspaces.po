@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 #: prefs.js:29
 msgid "Ignore last workspace:"
 msgstr "Игнорировать последний рабочий стол"
