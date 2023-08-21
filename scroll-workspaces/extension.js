@@ -29,8 +29,6 @@ export default class ScrollWorkspaces extends Extension {
 
 		let self = this;
 
-		console.log(this._settings)
-
 		let update_ignore_last_workspace = function() {
 			self._tailBuffer = self._settings.get_boolean('ignore-last-workspace') ? BUFFER_IGNORE_LAST_WORKSPACE : BUFFER_SHOW_ALL_WORKSPACES ;
 		};

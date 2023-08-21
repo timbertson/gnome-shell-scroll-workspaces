@@ -8,9 +8,7 @@ class ScrollWorkspacesSettingsWidget extends Adw.PreferencesGroup {
 
 	static {
 		GObject.registerClass(this);
-
 	}
-
 
     constructor(settings) {
 		super({
@@ -162,7 +160,6 @@ class ScrollWorkspacesSettingsWidget extends Adw.PreferencesGroup {
 
 export default class ScrollWorkspacesSettingsPrefs extends ExtensionPreferences {
     getPreferencesWidget() {
-
 		let settings = this.getSettings();
         return new ScrollWorkspacesSettingsWidget(settings);
     }
