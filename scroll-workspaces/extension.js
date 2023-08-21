@@ -1,91 +1,95 @@
-const Clutter = imports.gi.Clutter;
-const Main = imports.ui.main;
-const ExtensionUtils = imports.misc.extensionUtils;
-const Extension = ExtensionUtils.getCurrentExtension();
-const Meta = imports.gi.Meta;
-const Shell = imports.gi.Shell;
-const WorkspaceSwitcherPopup = imports.ui.workspaceSwitcherPopup;
+import Clutter from 'gi://Clutter';
+import Meta from 'gi://Meta';
+import * as WorkspaceSwitcherPopup from 'resource:///org/gnome/shell/ui/workspaceSwitcherPopup.js';
+import {Extension, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 const BUFFER_SHOW_ALL_WORKSPACES = 0;
 const BUFFER_IGNORE_LAST_WORKSPACE = 1;
 
-function Ext() {
-	this._init.apply(this, arguments);
-}
+export default class ScrollWorkspaces extends Extension {
+	constructor(metadata) {
+		super(metadata);
 
-Ext.prototype = {
-	_init: function(){
 		log('[System monitor] scroll-workspace init()');
 		this._panel = Main.panel;
 		this._panelBinding = null;
 		this._lastScroll = Date.now();
-		
-	},
+		this._tailBuffer = BUFFER_SHOW_ALL_WORKSPACES;
+		this._scroll_delay = 0;
+		this._wrap = false;
+		this._indicator = false;
+	};
 
-
-	enable: function() {
+	enable() {
 		log('[System monitor] scroll-workspace enable()');
+
+		// setup ignore-last-workspace pref
+		this._settings = this.getSettings();
 
 		let self = this;
 
-		// setup ignore-last-workspace pref
-		self._settings = ExtensionUtils.getSettings();
+		console.log(this._settings)
 
 		let update_ignore_last_workspace = function() {
 			self._tailBuffer = self._settings.get_boolean('ignore-last-workspace') ? BUFFER_IGNORE_LAST_WORKSPACE : BUFFER_SHOW_ALL_WORKSPACES ;
 		};
-		self._settings.connect('changed::ignore-last-workspace', update_ignore_last_workspace)
+		this._settings.connect('changed::ignore-last-workspace', update_ignore_last_workspace)
 		update_ignore_last_workspace(); // set initial value
-		
+
 		// setup scroll-delay pref
 		let update_scroll_delay = function() {
 			self._scroll_delay = self._settings.get_int('scroll-delay');
-			// log('scroll-workspaces scroll delay: ' + self._scroll_delay);
+			// log('scroll-workspaces scroll delay: ' + this._scroll_delay);
 		};
-		self._settings.connect('changed::scroll-delay', update_scroll_delay)
+		this._settings.connect('changed::scroll-delay', update_scroll_delay)
 		update_scroll_delay(); // set initial value
 
 		// setup wrap pref
 		let update_wrap = function() {
 			self._wrap = self._settings.get_boolean('wrap');
-			// log('scroll-workspaces wrap: ' + self._wrap);
+			// log('scroll-workspaces wrap: ' + this._wrap);
 		};
-		self._settings.connect('changed::wrap', update_wrap)
+		this._settings.connect('changed::wrap', update_wrap)
 		update_wrap(); // set initial value
 
 		// setup indicator pref
 		let update_indicator = function() {
 			self._indicator = self._settings.get_boolean('indicator');
-			// log('scroll-workspaces indicator enabled: ' + self._indicator);
+			// log('scroll-workspaces indicator enabled: ' + this._indicator);
 		};
-		self._settings.connect('changed::indicator', update_indicator)
+		this._settings.connect('changed::indicator', update_indicator)
 		update_indicator(); // set initial value
 
 
-		self._panel.reactive = true;
-		if (self._panelBinding) {
+		this._panel.reactive = true;
+		if (this._panelBinding) {
 			// enabled twice in a row? should be impossible
-			self.disable();
+			this.disable();
 		}
-		self._panelBinding = self._panel.connect('scroll-event', self._onScrollEvent.bind(self));
-	},
+		this._panelBinding = self._panel.connect('scroll-event', self._onScrollEvent.bind(self));
+	};
 
 
-	disable: function() {
+	disable() {
 		log('[System monitor] scroll-workspace disable()');
 		if (this._panelBinding) {
 			this._panel.disconnect(this._panelBinding);
 			this._panelBinding = null;
 		}
-	},
+	}
 
-	_onScrollEvent : function(actor, event) {
+	_onScrollEvent(actor, event) {
+
 		let source = event.get_source();
-		if (source != actor) {
-			// Actors in the status area often have their own scroll events,
-			let inStatusArea = this._panel._rightBox && this._panel._rightBox.contains && this._panel._rightBox.contains(source);
-			if (inStatusArea) return Clutter.EVENT_PROPAGATE;
-		}
+		// TODO: commented because it breaks with a crash
+		// if (source != this._panel) {
+		// 	// Actors in the status area often have their own scroll events,
+		// 	let inStatusArea = this._panel._rightBox &&
+		// 		this._panel._rightBox.contains &&
+		// 		this._panel._rightBox.contains(source);
+		// 	if (inStatusArea) return Clutter.EVENT_PROPAGATE;
+		// }
 
 		let motion;
 		let scroll_direction = event.get_scroll_direction();
@@ -123,7 +127,7 @@ Ext.prototype = {
 		if(!ws) return Clutter.EVENT_STOP;
 
 		let currentTime = Date.now();
-		
+
 		// global.log("scroll time diff = " + (currentTime - this._lastScroll));
 		if (currentTime < this._lastScroll + this._scroll_delay) {
 			if (currentTime < this._lastScroll) {
@@ -174,11 +178,5 @@ Ext.prototype = {
 		Main.wm.actionMoveWorkspace(ws);
 		this._lastScroll = currentTime;
 		return Clutter.EVENT_STOP;
-	},
-}
-
-function init(meta) {
-	log('[System monitor] scroll-workspace outer init()');
-	let ext = new Ext();
-	return ext;
+	}
 }
