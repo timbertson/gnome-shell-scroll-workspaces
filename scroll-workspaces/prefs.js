@@ -1,17 +1,8 @@
-const Gtk = imports.gi.Gtk;
+import Gtk from 'gi://Gtk';
 
-let Extension = imports.misc.extensionUtils.getCurrentExtension();
-const ExtensionUtils = imports.misc.extensionUtils;
+import {ExtensionPreferences, gettext as _} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
-const Gettext = imports.gettext.domain('scroll-workspaces');
-const _ = Gettext.gettext;
-
-function init() {
-	ExtensionUtils.initTranslations("scroll-workspaces");
-}
-
-function buildPrefsWidget() {
-	let settings = ExtensionUtils.getSettings();
+function buildPrefsWidget(settings) {
 	let frame = new Gtk.Box({
 		orientation: Gtk.Orientation.VERTICAL,
 		margin_top: 30,
@@ -151,4 +142,11 @@ function buildPrefsWidget() {
 	})();
 
 	return frame;
+}
+
+export default class ScrollWorkspacesSettingsPrefs extends ExtensionPreferences {
+	getPreferencesWidget() {
+		let settings = this.getSettings();
+		return buildPrefsWidget(settings);
+	}
 }

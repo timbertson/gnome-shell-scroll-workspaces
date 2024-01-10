@@ -1,35 +1,28 @@
-const Clutter = imports.gi.Clutter;
-const Main = imports.ui.main;
-const ExtensionUtils = imports.misc.extensionUtils;
-const Extension = ExtensionUtils.getCurrentExtension();
-const Meta = imports.gi.Meta;
-const Shell = imports.gi.Shell;
-const WorkspaceSwitcherPopup = imports.ui.workspaceSwitcherPopup;
+import Clutter from 'gi://Clutter';
+import Meta from 'gi://Meta';
+import * as WorkspaceSwitcherPopup from 'resource:///org/gnome/shell/ui/workspaceSwitcherPopup.js';
+import {Extension, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 const BUFFER_SHOW_ALL_WORKSPACES = 0;
 const BUFFER_IGNORE_LAST_WORKSPACE = 1;
 
-function Ext() {
-	this._init.apply(this, arguments);
-}
-
-Ext.prototype = {
-	_init: function(){
+export default class ScrollWorkspaces extends Extension {
+	constructor(metadata) {
+		super(metadata)
 		log('[System monitor] scroll-workspace init()');
 		this._panel = Main.panel;
 		this._panelBinding = null;
 		this._lastScroll = Date.now();
-		
-	},
+	}
 
-
-	enable: function() {
+	enable() {
 		log('[System monitor] scroll-workspace enable()');
 
 		let self = this;
 
 		// setup ignore-last-workspace pref
-		self._settings = ExtensionUtils.getSettings();
+		self._settings = this.getSettings()
 
 		let update_ignore_last_workspace = function() {
 			self._tailBuffer = self._settings.get_boolean('ignore-last-workspace') ? BUFFER_IGNORE_LAST_WORKSPACE : BUFFER_SHOW_ALL_WORKSPACES ;
@@ -68,25 +61,17 @@ Ext.prototype = {
 			self.disable();
 		}
 		self._panelBinding = self._panel.connect('scroll-event', self._onScrollEvent.bind(self));
-	},
+	}
 
-
-	disable: function() {
+	disable() {
 		log('[System monitor] scroll-workspace disable()');
 		if (this._panelBinding) {
 			this._panel.disconnect(this._panelBinding);
 			this._panelBinding = null;
 		}
-	},
+	}
 
-	_onScrollEvent : function(actor, event) {
-		let source = event.get_source();
-		if (source != actor) {
-			// Actors in the status area often have their own scroll events,
-			let inStatusArea = this._panel._rightBox && this._panel._rightBox.contains && this._panel._rightBox.contains(source);
-			if (inStatusArea) return Clutter.EVENT_PROPAGATE;
-		}
-
+	_onScrollEvent(_actor, event) {
 		let motion;
 		let scroll_direction = event.get_scroll_direction();
 
@@ -174,11 +159,5 @@ Ext.prototype = {
 		Main.wm.actionMoveWorkspace(ws);
 		this._lastScroll = currentTime;
 		return Clutter.EVENT_STOP;
-	},
-}
-
-function init(meta) {
-	log('[System monitor] scroll-workspace outer init()');
-	let ext = new Ext();
-	return ext;
+	}
 }
