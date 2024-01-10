@@ -10,65 +10,67 @@ const BUFFER_IGNORE_LAST_WORKSPACE = 1;
 export default class ScrollWorkspaces extends Extension {
 	constructor(metadata) {
 		super(metadata)
-		log('[System monitor] scroll-workspace init()');
-		this._panel = Main.panel;
-		this._panelBinding = null;
+		console.log('scroll-workspace init()');
 		this._lastScroll = Date.now();
+		this._signals = []
 	}
-
+	
+	_connect(target, name, fn) {
+		let connection = target.connect(name, fn)
+		this._signals.push([target, connection])
+	}
+	
 	enable() {
-		log('[System monitor] scroll-workspace enable()');
-
-		let self = this;
+		console.log('scroll-workspace enable()');
 
 		// setup ignore-last-workspace pref
-		self._settings = this.getSettings()
+		const settings = this.getSettings()
+		const panel = Main.panel;
 
-		let update_ignore_last_workspace = function() {
-			self._tailBuffer = self._settings.get_boolean('ignore-last-workspace') ? BUFFER_IGNORE_LAST_WORKSPACE : BUFFER_SHOW_ALL_WORKSPACES ;
+		let update_ignore_last_workspace = () => {
+			this._tailBuffer = settings.get_boolean('ignore-last-workspace') ? BUFFER_IGNORE_LAST_WORKSPACE : BUFFER_SHOW_ALL_WORKSPACES ;
 		};
-		self._settings.connect('changed::ignore-last-workspace', update_ignore_last_workspace)
+		this._connect(settings, 'changed::ignore-last-workspace', update_ignore_last_workspace)
 		update_ignore_last_workspace(); // set initial value
 		
 		// setup scroll-delay pref
-		let update_scroll_delay = function() {
-			self._scroll_delay = self._settings.get_int('scroll-delay');
-			// log('scroll-workspaces scroll delay: ' + self._scroll_delay);
+		let update_scroll_delay = () => {
+			this._scroll_delay = settings.get_int('scroll-delay');
+			// console.log('scroll-workspaces scroll delay: ' + this._scroll_delay);
 		};
-		self._settings.connect('changed::scroll-delay', update_scroll_delay)
+		this._connect(settings, 'changed::scroll-delay', update_scroll_delay)
 		update_scroll_delay(); // set initial value
 
 		// setup wrap pref
-		let update_wrap = function() {
-			self._wrap = self._settings.get_boolean('wrap');
-			// log('scroll-workspaces wrap: ' + self._wrap);
+		let update_wrap = () => {
+			this._wrap = settings.get_boolean('wrap');
+			// console.log('scroll-workspaces wrap: ' + this._wrap);
 		};
-		self._settings.connect('changed::wrap', update_wrap)
+		this._connect(settings, 'changed::wrap', update_wrap)
 		update_wrap(); // set initial value
 
 		// setup indicator pref
-		let update_indicator = function() {
-			self._indicator = self._settings.get_boolean('indicator');
-			// log('scroll-workspaces indicator enabled: ' + self._indicator);
+		let update_indicator = () => {
+			this._indicator = settings.get_boolean('indicator');
+			// console.log('scroll-workspaces indicator enabled: ' + this._indicator);
 		};
-		self._settings.connect('changed::indicator', update_indicator)
+		this._connect(settings, 'changed::indicator', update_indicator)
 		update_indicator(); // set initial value
 
 
-		self._panel.reactive = true;
-		if (self._panelBinding) {
-			// enabled twice in a row? should be impossible
-			self.disable();
-		}
-		self._panelBinding = self._panel.connect('scroll-event', self._onScrollEvent.bind(self));
+		panel.reactive = true;
+		this._connect(panel, 'scroll-event', this._onScrollEvent.bind(this));
 	}
 
 	disable() {
-		log('[System monitor] scroll-workspace disable()');
-		if (this._panelBinding) {
-			this._panel.disconnect(this._panelBinding);
-			this._panelBinding = null;
+		console.log('scroll-workspace disable()');
+
+		for (let pair of this._signals) {
+			let target = pair[0]
+			let connection = pair[1]
+			target.disconnect(connection)
 		}
+		this._signals = []
 	}
 
 	_onScrollEvent(_actor, event) {
@@ -109,7 +111,7 @@ export default class ScrollWorkspaces extends Extension {
 
 		let currentTime = Date.now();
 		
-		// global.log("scroll time diff = " + (currentTime - this._lastScroll));
+		// console.log("scroll time diff = " + (currentTime - this._lastScroll));
 		if (currentTime < this._lastScroll + this._scroll_delay) {
 			if (currentTime < this._lastScroll) {
 				// Clock went backwards. Reset & accept event
@@ -146,7 +148,7 @@ export default class ScrollWorkspaces extends Extension {
 				// clicks events from reaching the dash actor. I can't see a reason
 				// why it should be reactive.
 				Main.wm._workspaceSwitcherPopup.reactive = false;
-				Main.wm._workspaceSwitcherPopup.connect('destroy', function() {
+				Main.wm._workspaceSwitcherPopup.connect('destroy', () => {
 					Main.wm._workspaceSwitcherPopup = null;
 				});
 
